@@ -1,0 +1,546 @@
+/* Dashboard Specific Styles */
+/* Insight Cards */
+.insight-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.insight-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dashboard Layout */
+.container-fluid {
+    padding: 0.75rem;
+}
+
+.row {
+    margin: 0 -8px;
+}
+
+.col-md-3, .col-md-6, .col-lg-6, .col-xl-6, .col-lg-8, .col-lg-4 {
+    padding: 8px;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+/* Make sure the chart container takes full height */
+.card-body canvas {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Stats Cards */
+.card.text-center {
+    height: 100%;
+    padding: 1.5rem;
+}
+
+.card.text-center i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+.card.text-center h5 {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.card.text-center h3 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Chart Containers */
+.chart-container {
+    position: relative;
+    min-height: 300px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+}
+
+/* Volume Chart Container */
+#emailsChart {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Priority Chart Container */
+#priorityChart {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Category Chart Container */
+#categoryChart {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Response Time Chart Container */
+#responseTimeChart {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Chart Title Styles */
+.chart-container h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Chart Grid Layout */
+.row {
+    margin-bottom: 1rem;
+}
+
+.col-md-6, .col-lg-6, .col-xl-6 {
+    padding: 0.5rem;
+}
+
+/* Time Period Selector */
+.btn-group {
+    margin-bottom: 0;
+    padding: 0.25rem;
+    background: #f8f9fa;
+    border-radius: 20px;
+    gap: 0.15rem;
+}
+
+.btn-group .btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 16px;
+    margin: 0 0.1rem;
+    min-width: 90px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1400px) {
+    .chart-container {
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 992px) {
+    .chart-container {
+        min-height: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        min-height: 150px;
+    }
+}
+
+/* Chart Tooltips */
+.chartjs-tooltip {
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Loading State */
+.loading {
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Email Categories Table */
+.email-categories {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.email-categories table {
+    margin: 0;
+}
+
+/* Response Time Analysis */
+.response-time-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+/* Priority Inbox */
+.priority-inbox {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.priority-inbox .table tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.priority-inbox .table tr:hover {
+    background-color: rgba(54, 153, 255, 0.05);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.refresh-btn {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.refresh-btn:hover {
+    background-color: #0056b3;
+}
+
+.refresh-btn i {
+    font-size: 14px;
+}
+
+.email-count {
+    background-color: #f8f9fa;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.auto-refresh {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auto-refresh label {
+    color: #495057;
+    font-size: 14px;
+}
+
+.auto-refresh select {
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    color: #495057;
+}
+
+.starred {
+    color: #ffc107;
+}
+
+.star-col {
+    width: 40px;
+    text-align: center;
+}
+
+/* Add animation for refresh icon */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.refresh-btn.refreshing i {
+    animation: spin 1s linear infinite;
+}
+
+/* Compose Modal Styles */
+.modal-lg {
+    max-width: 800px;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+#composeForm .form-label {
+    font-weight: 500;
+    color: #555;
+}
+
+#composeForm .form-control {
+    border-radius: 4px;
+    border-color: #ddd;
+}
+
+#composeForm .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+#emailBody {
+    resize: vertical;
+    min-height: 200px;
+}
+
+.attachment-item {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.attachment-item .remove-attachment {
+    padding: 0;
+    color: #dc3545;
+}
+
+.attachment-item .remove-attachment:hover {
+    color: #bb2d3b;
+}
+
+#attachFileBtn {
+    transition: all 0.2s;
+}
+
+#attachFileBtn:hover {
+    background-color: #e9ecef;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+.btn-compose {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+.btn-compose:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modal-lg {
+        max-width: 95%;
+        margin: 10px;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    #emailBody {
+        min-height: 150px;
+    }
+}
+
+#menu-toggle {
+  background: transparent !important;
+  border: none !important;
+  color: #6c757d !important;
+}
+
+#menu-toggle:hover {
+  color: #ffffff !important;
+  background: #ff3636 !important;
+}
+
+#menu-toggle i {
+  color: inherit !important;
+}
+
+/* Add styles for Recent High Priority Emails table */
+.table-hover tbody tr:hover {
+    background-color: rgba(78, 115, 223, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+/* Style for the high priority badge */
+.badge.rounded-pill.bg-danger {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+    transition: all 0.2s ease;
+    color: white !important;
+}
+
+.badge.rounded-pill.bg-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.25);
+    color: white !important;
+}
+
+/* Style for the high priority badge (keeping for backward compatibility) */
+.badge.rounded-pill.bg-primary {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    transition: all 0.2s ease;
+    color: white !important;
+}
+
+.badge.rounded-pill.bg-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgb(255, 255, 255);
+}
+
+/* Improve table aesthetics */
+#highPriorityEmailsList td {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+
+/* Truncate long subject lines */
+#highPriorityEmailsList td:first-child {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Add subtle dividers between rows */
+#highPriorityEmailsList tr:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Fade in animation for new entries */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#highPriorityEmailsList tr {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+/* Style specifically for the High Priority badge in the table */
+#highPriorityEmailsList .badge.rounded-pill.bg-danger {
+    color: white !important;
+    background-color: #dc3545 !important;
+    border: none !important;
+}
+
+#highPriorityEmailsList .badge.rounded-pill.bg-danger span,
+#highPriorityEmailsList .badge.rounded-pill.bg-danger * {
+    color: white !important;
+}
+
+/* Override any anchor styles */
+a.badge.rounded-pill.bg-danger,
+a.badge.rounded-pill.bg-danger:hover,
+a.badge.rounded-pill.bg-danger:focus {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+/* Final override for anything that might be affecting the badge color */
+.badge.bg-danger,
+span.badge.bg-danger,
+.bg-danger,
+.badge.rounded-pill.bg-danger {
+    color: white !important;
+}
+
+/* Reset any potential link styles that might be inherited */
+a, a:hover, a:focus {
+    color: inherit;
+}
