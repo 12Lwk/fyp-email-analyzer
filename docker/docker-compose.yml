@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  email_db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: email_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: email1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - email_postgres_data:/var/lib/postgresql/data
+
+  vector_db:
+    image: ankane/pgvector:latest
+    environment:
+      POSTGRES_DB: vector_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: email1234
+    ports:
+      - "5433:5432"
+    volumes:
+      - vector_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  email_postgres_data:
+  vector_postgres_data: 
