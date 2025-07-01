@@ -1,0 +1,670 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sent Email Detail</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/sent_email_detail.css' %}" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+  <style>
+    /* Sidebar Styles */
+    .sidebar {
+      width: 250px;
+      min-height: 100vh;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      transition: all 0.3s;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ...existing CSS... */
+
+    /* Compose Email Form Styles */
+    .compose-email-form {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .compose-field {
+      display: flex;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .compose-field label {
+      width: 70px;
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 0;
+      padding-top: 8px;
+    }
+
+    .compose-field .form-control {
+      border: none;
+      border-radius: 0;
+      padding: 0.375rem 0.5rem;
+      flex-grow: 1;
+      box-shadow: none;
+      background-color: #fff;
+    }
+
+    .compose-field .form-control:focus {
+      outline: none;
+      box-shadow: none;
+      border-color: transparent;
+      background-color: #f8f9fa;
+    }
+
+    .compose-field .compose-actions {
+      margin-left: auto;
+    }
+
+    .compose-body {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 250px;
+    }
+
+    .compose-body .form-control {
+      min-height: 250px;
+      resize: none;
+      border: none;
+      padding: 0.75rem;
+      font-family: Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    .form-control.is-invalid {
+      border-color: #dc3545;
+      padding-right: calc(1.5em + .75rem);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(.375em + .1875rem) center;
+      background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+    }
+
+    .invalid-feedback {
+      display: block;
+      width: 100%;
+      margin-top: .25rem;
+      font-size: 80%;
+      color: #dc3545;
+    }
+
+    /* Compose form styles for validation */
+    .compose-field .position-relative {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .compose-field .form-control:focus {
+      box-shadow: none;
+      border-color: #80bdff;
+    }
+
+    .compose-field .form-control.is-invalid:focus {
+      box-shadow: none;
+      border-color: #dc3545;
+    }
+
+    /* Success styles */
+    .form-control.is-valid {
+      border-color: #28a745;
+      padding-right: calc(1.5em + .75rem);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(.375em + .1875rem) center;
+      background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+    }
+
+    /* Responsive Compose Modal */
+    @media (max-width: 768px) {
+      .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+      }
+      
+      .compose-field {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .compose-field label {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        padding-top: 0;
+      }
+    }
+
+    .btn-icon {
+      color: #495057;
+      background: transparent;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      margin: 0 2px;
+    }
+
+    .btn-icon:hover {
+      color: #212529;
+      background-color: #e9ecef;
+      border-radius: 0.25rem;
+    }
+    
+    /* Filter Styling */
+    .email-controls {
+      align-items: center;
+    }
+    
+    .email-controls .btn-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .email-controls .dropdown-menu {
+      max-height: 350px;
+      overflow-y: auto;
+      padding: 8px !important;
+    }
+    
+    /* Filter Dropdown Styling */
+    .dropdown-toggle {
+      min-width: 150px;
+      text-align: center;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Add these improved checkbox styles */
+    /* Checkbox container style improvements */
+    .form-check {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 4px;
+      transition: background-color 0.15s ease;
+      margin-bottom: 2px;
+      position: relative;
+      width: 100%;
+    }
+    
+    /* Fix for dropdown form checks specifically */
+    .dropdown-menu .form-check {
+      margin: 0;
+      padding: 6px 8px;
+    }
+    
+    .form-check:hover {
+      background-color: rgba(0,0,0,0.05);
+    }
+    
+    /* Fix checkbox alignment */
+    .form-check-input {
+      margin-top: 0;
+      margin-right: 10px;
+      position: static;
+      min-width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    
+    /* Make labels properly aligned with checkboxes */
+    .form-check-label {
+      cursor: pointer;
+      font-size: 0.95rem;
+      flex-grow: 1;
+      margin-left: 0;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    /* Fix dropdown menus */
+    .dropdown-menu {
+      width: auto;
+      min-width: 220px !important;
+      padding: 8px;
+    }
+    
+    /* Ensure checkbox is visible */
+    .category-filter-checkbox, .priority-filter-checkbox {
+      position: static !important;
+      margin-left: 0 !important;
+      z-index: 2;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      width: 16px;
+      height: 16px;
+      float: none !important;
+      flex-shrink: 0;
+    }
+    
+    /* Remove the previous conflicting styles */
+    .dropdown-menu li label {
+      display: inline-flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0;
+    }
+    
+    /* Highlight selected categories */
+    #categoryMultiSelectDropdown.has-selections, #priorityFilterDropdown.has-selections {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+    }
+    
+    /* Fix for checkbox spacing and alignment */
+    .dropdown-menu li {
+      position: relative;
+    }
+    
+    #categoriesMultiSelectList, #priorityFilterList {
+      border: 1px solid rgba(0,0,0,.15);
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+    }
+    
+    /* Hide validation messages in email metadata */
+    .email-meta .invalid-feedback,
+    .email-meta .valid-feedback {
+      display: none !important;
+    }
+    
+    /* Remove validation indicators from metadata fields */
+    .email-meta .is-invalid,
+    .email-meta .is-valid {
+      background-image: none !important;
+      border-color: inherit !important;
+    }
+  </style>  
+
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <i class="fa fa-envelope-open"></i>
+                    <span>Email Analytics</span>
+                </div>
+                <button id="sidebar-close" class="btn-close d-md-none"></button>
+            </div>
+
+            <div class="sidebar-user">
+                <img src="{% static 'images/UserProfileWhite.jpg' %}" alt="User Profile" class="user-avatar" id="sidebarUserAvatar">
+                <div class="user-info">
+                    <h6 id="sidebarDisplayName">{{ user_email|slice:":-10"|default:"User" }}</h6>
+                    <span id="sidebarEmail" data-user-email="{{ user_email }}">{{ user_email }}</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="{% url 'email_app:email_dashboard' %}" class="nav-link">
+                        <i class="fa fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:inbox_email' %}" class="nav-link">
+                        <i class="fa fa-inbox"></i>
+                        <span>Inbox</span>
+                        <span class="badge" id="inboxCount"></span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="{% url 'email_app:sent_email' %}" class="nav-link">
+                        <i class="fa fa-paper-plane"></i>
+                        <span>Sent</span>
+                    </a>
+                </li>
+                <li class="nav-divider"></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#composeModal">
+                        <i class="fa fa-plus-circle"></i>
+                        <span>Compose</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:spam_email' %}" class="nav-link">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <span>Spam</span>
+                    </a>
+                </li>
+                <li class="nav-divider"></li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:settings' %}" class="nav-link">
+                        <i class="fa fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:logout' %}" class="nav-link text-danger">
+                        <i class="fa fa-sign-out-alt"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="online-status">
+                    <span class="status-dot online"></span>
+                    <span>Online</span>
+                </div>
+            </div>
+        </nav>
+
+         <!-- Page Content -->
+        <div id="page-content-wrapper" class="w-100">
+            <!-- Hidden form for email detail navigation -->
+            <form id="emailDetailForm" method="GET" action="" style="display: none;">
+                <input type="hidden" id="emailDetailId" name="id">
+            </form>
+
+            <!-- Top Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+                <div class="container-fluid">
+                  <button class="btn" id="menu-toggle" title="Toggle Sidebar (Ctrl+B)">
+                    <i class="fas fa-bars"></i>
+                  </button>
+                  <form class="d-flex ms-auto my-2 my-lg-0">
+                    <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search" />
+                    <button class="btn btn-outline-secondary" type="submit">
+                      <i class="fa fa-search"></i>
+                    </button>
+                  </form>
+                </div>
+              </nav>
+
+            <!-- Email Content -->
+            <div class="container-fluid py-3">
+                <!-- Alert containers for feedback messages -->
+                <div id="alertContainer" class="mb-3"></div>
+                <div id="successAlert" style="display: none;" class="alert alert-success alert-dismissible fade show">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span></span>
+                </div>
+
+                <!-- Back Button -->
+                <div class="mb-3">
+                    <a href="javascript:void(0);" class="back-button text-decoration-none" id="backToSent" onclick="handleBackButtonClick()">
+                        <i class="fas fa-arrow-left"></i> Back to Sent
+                    </a>
+                </div>
+
+                <!-- Error Container -->
+                <div id="errorContainer" class="mb-4" {% if not error %}style="display: none;"{% endif %}>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {% if error %}{{ error }}{% else %}An error occurred{% endif %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="/sent/" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-1"></i> Return to Sent
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingContainer" class="text-center py-5" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Loading email content...</p>
+                </div>
+
+                <!-- Main Content Area -->
+                <div id="emailContentContainer" {% if error %}style="display: none;"{% endif %}>
+                    <!-- Email Header Section -->
+                    <div class="email-header mb-4">
+                        <h2 id="emailSubject" class="card-title mb-3">
+                            {% if email.subject and email.subject != '' %}
+                                {{ email.subject }}
+                            {% else %}
+                                No Subject
+                            {% endif %}
+                        </h2>
+                        
+                        <!-- Email Metadata -->
+                        <div class="email-meta p-3 mb-3 rounded">
+                            <p class="from"><strong>From:</strong> <span id="emailFrom">{{ email.sender }}</span></p>
+                            <p class="to"><strong>To:</strong> <span id="emailTo">
+                            {% if email.recipients %}
+                                {% if email.recipients|stringformat:'s'|slice:':1' == '[' %}
+                                    {{ email.recipients|stringformat:'s'|slice:'2:-2'|default:"(No recipients)" }}
+                                {% else %}
+                                    {{ email.recipients|default:"(No recipients)" }}
+                                {% endif %}
+                            {% else %}
+                                (No recipients)
+                            {% endif %}
+                            </span></p>
+                            <p class="email-details date"><strong>Date:</strong> <span data-date="{{ email.date }}">{{ email.date }}</span></p>
+                        </div>
+
+                        <!-- Message Status -->
+                        <div class="message-status mb-3">
+                            <h6><i class="fas fa-info-circle"></i> Message Status</h6>
+                            <div id="messageStatus">
+                                <!-- Sent Status -->
+                                <span class="badge bg-success">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Sent
+                                </span>
+                                
+                                <!-- Attachments -->
+                                {% if email.has_attachments %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-paperclip"></i> Has Attachments
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="email-content" id="emailContent">
+                            {{ email.snippet|safe|default:"No content available" }}
+                        </div>
+
+                        {% if email.has_attachments and email.attachments %}
+                            <div id="emailAttachments" class="mt-4">
+                                <h6><i class="fas fa-paperclip"></i> Attachments</h6>
+                                <div class="list-group">
+                                    {% for attachment in email.attachments %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="fas fa-file me-2"></i>
+                                                {{ attachment }}
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="/api/attachment/{{ email.id }}/{{ attachment|urlencode }}" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   download="{{ attachment }}" 
+                                                   title="Download">
+                                                    <i class="fas fa-download"></i> Download
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                        onclick="previewAttachment('{{ email.id }}', '{{ attachment|escapejs }}')" 
+                                                        title="Preview">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons text-end">
+                            <!-- Voice Command Button -->
+                            <button class="btn btn-outline-primary voice-command-btn me-2" id="voiceCommandBtn" title="Voice Command">
+                                <i class="fas fa-microphone"></i> Voice Command
+                            </button>
+                            <!-- Existing buttons -->
+                            <button class="btn btn-outline-primary reply-btn" data-email-id="{{ email.id }}" title="Reply">
+                                <i class="fas fa-reply"></i> Reply
+                            </button>
+                            
+                            <button class="btn btn-outline-primary forward-btn" data-email-id="{{ email.id }}" title="Forward">
+                                <i class="fas fa-forward"></i> Forward
+                            </button>             
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Command Status -->
+    <div id="voiceCommandStatus" class="alert" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Listening...</span>
+            </div>
+            <div>Listening... Say a command</div>
+        </div>
+        <div class="mt-2 small">
+            Available commands:
+            <ul class="mb-0">
+                <li>"Read this email"</li>
+                <li>"Reply to this email"</li>
+                <li>"Forward this email"</li>
+                <li>"Close compose"</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Compose Email Modal -->
+    <div class="modal fade" id="composeModal" tabindex="-1" aria-labelledby="composeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="composeModalLabel">Compose Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeComposeModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="composeForm" class="compose-email-form">
+                        <!-- From field -->
+                        <div class="compose-field">
+                            <label for="composeFrom" class="form-label">From:</label>
+                            <input type="text" class="form-control" id="composeFrom" value="{{ user_email }}" readonly>
+                        </div>
+                        
+                        <!-- To field -->
+                        <div class="compose-field">
+                            <label for="emailTo" class="form-label">To:</label>
+                            <div class="position-relative flex-grow-1">
+                                <input type="email" class="form-control" id="emailTo" required>
+                                <!-- Validation feedback will be inserted here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- CC field -->
+                        <div class="compose-field cc-field d-none" id="emailCcContainer">
+                            <label for="emailCc" class="form-label">Cc:</label>
+                            <div class="position-relative flex-grow-1">
+                                <input type="email" class="form-control" id="emailCc">
+                                <!-- Validation feedback will be inserted here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- BCC field -->
+                        <div class="compose-field bcc-field d-none" id="emailBccContainer">
+                            <label for="emailBcc" class="form-label">Bcc:</label>
+                            <div class="position-relative flex-grow-1">
+                                <input type="email" class="form-control" id="emailBcc">
+                                <!-- Validation feedback will be inserted here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Field controls -->
+                        <div class="compose-field-controls">
+                            <button type="button" class="btn btn-link" id="ccButton">Cc</button>
+                            <button type="button" class="btn btn-link" id="bccButton">Bcc</button>
+                        </div>
+                        
+                        <!-- Subject field -->
+                        <div class="compose-field">
+                            <label for="emailSubject" class="form-label">Subject:</label>
+                            <div class="position-relative flex-grow-1">
+                                <input type="text" class="form-control" id="emailSubject">
+                                <!-- Validation feedback will be inserted here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Email body -->
+                        <div class="compose-field">
+                            <textarea class="form-control compose-body" id="emailBody" rows="10"></textarea>
+                            <input type="hidden" id="emailHtmlContent">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="sendEmailBtn">
+                        <i class="fas fa-paper-plane me-1"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/hotword_detection.js' %}"></script>
+    <script src="{% static 'js/voice_interaction.js' %}"></script>
+    <script src="{% static 'js/compose_email.js' %}"></script>
+    <script src="{% static 'js/sent_email_detail.js' %}"></script>
+
+    <!-- Initialize Email Actions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing email functionality');
+            
+            // Format dates on page load
+            const dateElements = document.querySelectorAll('[data-date]');
+            dateElements.forEach(element => {
+                const originalDate = element.getAttribute('data-date');
+                if (originalDate) {
+                    element.textContent = moment(originalDate).format('dddd, MMMM D, YYYY [at] h:mm A');
+                }
+            });
+            
+            // Initialize voice command functionality with delay
+            setTimeout(() => {
+                const voiceCommandBtn = document.getElementById('voiceCommandBtn');
+                if (voiceCommandBtn && typeof initSpeechRecognition === 'function') {
+                    initSpeechRecognition();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

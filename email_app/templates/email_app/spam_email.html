@@ -1,0 +1,996 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Email Analytics - Spam</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/spam_email.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/category_colors.css' %}" />
+  
+  <!-- Compose Email Form Styles -->
+  <style>
+    /* Compose Email Form Styles */
+    .compose-email-form {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .compose-field {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .compose-field label {
+      width: 60px;
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+
+    .compose-field input.form-control-plaintext {
+      border: none;
+      padding: 0.375rem 0;
+      flex-grow: 1;
+    }
+
+    .compose-field input.form-control-plaintext:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .compose-field .compose-actions {
+      margin-left: auto;
+    }
+
+    .compose-body {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .compose-body .form-control {
+      min-height: 250px;
+      resize: none;
+    }
+
+    .btn-icon {
+      color: #495057;
+      background: transparent;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      margin: 0 2px;
+    }
+
+    .btn-icon:hover {
+      color: #212529;
+      background-color: #e9ecef;
+      border-radius: 0.25rem;
+    }
+    
+    /* Limit email display length */
+    .email-sender, .email-subject {
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+    }
+    
+    .email-snippet {
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+    }
+
+    /* Status badge styles */
+    .badge.rounded-pill {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.35rem 0.6rem;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Animation for loading placeholder */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+    
+    .empty-state {
+      animation: fadeInUp 0.5s ease-out;
+      padding: 2rem 0;
+    }
+
+    /* Modify table height - remove scrolling */
+    .table-responsive {
+      min-height: auto;
+      height: auto;
+      position: relative;
+      overflow-y: visible;
+    }
+    
+    /* Make sure the table takes full width */
+    .table {
+      margin-bottom: 0;
+      width: 100%;
+    }
+    
+    /* Row styling for better readability */
+    .table tbody tr {
+      height: 60px; /* Fixed row height */
+    }
+    
+    /* Make table header sticky but only to the container */
+    .table thead th {
+      position: relative;
+      background-color: white;
+      border-bottom: 2px solid #dee2e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <i class="fa fa-envelope-open"></i>
+          <span>Email Analytics</span>
+        </div>
+        <button id="sidebar-close" class="btn-close d-md-none"></button>
+      </div>
+
+      <div class="sidebar-user">
+        <img src="{% static 'images/UserProfileWhite.jpg' %}" alt="User Profile" class="user-avatar" id="sidebarUserAvatar">
+        <div class="user-info">
+          <h6 id="sidebarDisplayName">{{ user_email|slice:":-10"|default:"User" }}</h6>
+          <span id="sidebarEmail">{{ user_email }}</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-item">
+          <a href="{% url 'email_app:email_dashboard' %}" class="nav-link">
+            <i class="fa fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:inbox_email' %}" class="nav-link">
+            <i class="fa fa-inbox"></i>
+            <span>Inbox</span>
+            <span class="badge" id="inboxCount"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:sent_email' %}" class="nav-link">
+            <i class="fa fa-paper-plane"></i>
+            <span>Sent</span>
+            <span class="badge" id="sentCount"></span>
+          </a>
+        </li>
+       
+        <li class="nav-divider"></li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#composeModal">
+            <i class="fa fa-plus-circle"></i>
+            <span>Compose</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a href="{% url 'email_app:spam_email' %}" class="nav-link">
+            <i class="fa fa-exclamation-triangle"></i>
+            <span>Spam</span>
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:settings' %}" class="nav-link">
+            <i class="fa fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:logout' %}" class="nav-link text-danger">
+            <i class="fa fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="online-status">
+          <span class="status-dot online"></span>
+          <span>Online</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper" class="w-100">
+      <!-- Hidden form for email detail navigation -->
+      <form id="emailDetailForm" method="GET" action="" style="display: none;">
+        <input type="hidden" id="emailDetailId" name="id">
+      </form>
+      
+      <!-- Top Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container-fluid">
+          <button class="btn" id="menu-toggle" title="Toggle Sidebar (Ctrl+B)">
+            <i class="fas fa-bars"></i>
+          </button>
+          <form class="d-flex ms-auto my-2 my-lg-0">
+            <div class="input-group">
+              <input type="text" class="form-control" id="navbarSearchInput" placeholder="Search..." aria-label="Search">
+              <button class="btn btn-outline-secondary" type="button" id="navbarSearchButton">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </nav>
+
+      <!-- Spam Content -->
+      <div class="container-fluid py-3">
+        <!-- Email Controls -->
+        <div class="email-controls d-flex justify-content-between align-items-center mb-3">
+          <div class="btn-group">
+            <!-- Removing all buttons as requested -->
+          </div>
+          <div class="flex-grow-1 mx-3">
+            <div class="input-group">
+              <input type="text" class="form-control" id="searchInput" placeholder="Search spam email...">
+              <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email List Card with Table and Pagination -->
+        <div class="card">
+          <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <select class="form-select form-select-sm me-2" id="pageSizeSelect" style="width: auto;">
+                  <option value="10">10 per page</option>
+                  <option value="25">25 per page</option>
+                  <option value="50">50 per page</option>
+                  <option value="100">100 per page</option>
+                </select>
+                <span class="text-muted" id="emailCount">0 emails</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="me-2" id="pageInfo">Page 1 of 1</span>
+                <div class="btn-group pagination-controls">
+                  <button class="btn btn-outline-primary btn-sm pagination-prev" id="prevPage" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm pagination-next" id="nextPage" disabled>
+                    Next <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0" id="emailTable">
+                <thead>
+                  <tr>
+                    <th width="30">
+                      <input type="checkbox" class="form-check-input" id="selectAllEmails">
+                    </th>
+                    <th width="30"></th>
+                    <th>From</th>
+                    <th>Subject</th>
+                    <th>Snippet</th>
+                    <th width="100">Date</th>
+                    <th width="100" class="label-column">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="emailTableBody">
+                  <!-- Email rows will be added here dynamically -->
+                  <tr class="loading-placeholder">
+                    <td colspan="7" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2">Loading emails...</p>
+                    </td>
+                  </tr>
+                  <!-- Empty state message -->
+                  <tr id="noEmailsMessage" style="display: none;">
+                    <td colspan="7" class="text-center py-5">
+                      <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle fa-3x text-muted mb-3"></i>
+                        <h5>No Spam Emails</h5>
+                        <p class="text-muted">No spam emails were found.</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+              
+              <div class="d-flex align-items-center">
+                <!-- Removed duplicate pagination controls -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Error Alert - Initially Hidden -->
+        <div id="errorAlert" class="alert alert-danger mt-3" style="display: none;">
+          <i class="fas fa-exclamation-circle me-2"></i>
+          <span id="errorMessage">Failed to load emails. Please try again.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compose Email Modal -->
+  <div class="modal fade" id="composeModal" tabindex="-1" aria-labelledby="composeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="composeModalLabel">Compose Email</h5>
+          <div class="ms-auto">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body p-0">
+          <form id="composeForm" class="compose-email-form">
+            <div class="compose-header p-3 border-bottom">
+              <div class="compose-field">
+                <label>From:</label>
+                <select class="form-select-sm border-0" id="emailFrom">
+                  <option>{{ user_email }}</option>
+                </select>
+              </div>
+              <div class="compose-field">
+                <label>To:</label>
+                <input type="text" class="form-control-plaintext" id="emailTo" placeholder="Recipients">
+                <div class="compose-actions">
+                  <button type="button" class="btn btn-link btn-sm" id="ccButton">Cc</button>
+                  <button type="button" class="btn btn-link btn-sm" id="bccButton">Bcc</button>
+                </div>
+              </div>
+              <div class="compose-field cc-field d-none" id="emailCcContainer">
+                <label>Cc:</label>
+                <input type="text" class="form-control-plaintext" id="emailCc" placeholder="Cc recipients">
+              </div>
+              <div class="compose-field bcc-field d-none" id="emailBccContainer">
+                <label>Bcc:</label>
+                <input type="text" class="form-control-plaintext" id="emailBcc" placeholder="Bcc recipients">
+              </div>
+              <div class="compose-field">
+                <label>Subject:</label>
+                <input type="text" class="form-control-plaintext" id="emailSubject" placeholder="Subject">
+              </div>
+            </div>
+            <div class="compose-body">
+              <div class="email-toolbar border-bottom p-2">
+                <button type="button" class="btn btn-sm btn-icon" id="attachFileBtn" title="Attach files">
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="fileInput" class="d-none" multiple>
+                <button type="button" class="btn btn-sm btn-icon" title="Insert link">
+                  <i class="fas fa-link"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-icon" title="Insert emoji">
+                  <i class="far fa-smile"></i>
+                </button>
+              </div>
+              <textarea class="form-control border-0" id="emailBody" rows="12"></textarea>
+              <div id="attachmentList" class="p-2">
+                <!-- Attachments will be listed here -->
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex justify-content-between w-100">
+            <div>
+              <button type="submit" form="composeForm" class="btn btn-primary">
+                Send <i class="fas fa-paper-plane ms-1"></i>
+              </button>
+              <button type="button" class="btn btn-outline-secondary" id="saveAsDraft">
+                Save as Draft
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/navbar.js' %}"></script>
+  <script src="{% static 'js/spam_email.js' %}"></script>
+  <script src="{% static 'js/compose_email.js' %}"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the page
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialPage = parseInt(urlParams.get('page')) || 1;
+      loadEmails(initialPage);
+      
+      // Add event listeners
+      document.getElementById('pageSizeSelect')?.addEventListener('change', function() {
+        loadEmails(1); // Reset to page 1 when changing page size
+      });
+      
+      // Clear out any previously bound event listeners by replacing with cloned elements
+      const prevPageBtn = document.getElementById('prevPage');
+      const nextPageBtn = document.getElementById('nextPage');
+      
+      if (prevPageBtn) {
+        const newPrevBtn = prevPageBtn.cloneNode(true);
+        prevPageBtn.parentNode.replaceChild(newPrevBtn, prevPageBtn);
+        newPrevBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (currentPage > 1) {
+            loadEmails(currentPage - 1);
+          }
+          return false;
+        });
+      }
+      
+      if (nextPageBtn) {
+        const newNextBtn = nextPageBtn.cloneNode(true);
+        nextPageBtn.parentNode.replaceChild(newNextBtn, nextPageBtn);
+        newNextBtn.addEventListener('click', function(e) {
+          e.preventDefault(); 
+          loadEmails(currentPage + 1);
+          return false;
+        });
+      }
+      
+      // Add search functionality
+      const searchInput = document.getElementById('searchInput');
+      const navbarSearchInput = document.getElementById('navbarSearchInput');
+      const searchButton = document.getElementById('searchButton');
+      const navbarSearchButton = document.getElementById('navbarSearchButton');
+      
+      // Function to handle search from any input
+      function setupSearchInput(input, button) {
+        if (input) {
+          // Handle input changes with debounce
+          input.addEventListener('input', debounce(function() {
+            // Sync the other search input if it exists
+            if (input === searchInput && navbarSearchInput) {
+              navbarSearchInput.value = input.value;
+            } else if (input === navbarSearchInput && searchInput) {
+              searchInput.value = input.value;
+            }
+            loadEmails(1); // Reset to first page when searching
+          }, 300));
+          
+          // Handle Enter key press
+          input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault(); // Prevent form submission
+              // Sync the other search input if it exists
+              if (input === searchInput && navbarSearchInput) {
+                navbarSearchInput.value = input.value;
+              } else if (input === navbarSearchInput && searchInput) {
+                searchInput.value = input.value;
+              }
+              loadEmails(1); // Reset to first page when searching
+            }
+          });
+        }
+        
+        // Setup button click handler
+        if (button) {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Sync the other search input if needed
+            if (input === searchInput && navbarSearchInput) {
+              navbarSearchInput.value = input.value;
+            } else if (input === navbarSearchInput && searchInput) {
+              searchInput.value = input.value;
+            }
+            loadEmails(1); // Reset to first page when searching
+          });
+        }
+      }
+      
+      // Setup both search inputs
+      setupSearchInput(searchInput, searchButton);
+      setupSearchInput(navbarSearchInput, navbarSearchButton);
+      
+      // Handle browser back/forward buttons
+      window.addEventListener('popstate', function(event) {
+        if (event.state && event.state.page) {
+          loadEmails(event.state.page);
+        } else {
+          loadEmails(1);
+        }
+      });
+      
+      // Checkbox selection
+      document.getElementById('selectAllEmails')?.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('#emailTableBody input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+      });
+      
+      // Check if there's a search parameter in the URL and trigger search
+      if (urlParams.has('search')) {
+        const searchValue = urlParams.get('search');
+        // Set both search inputs if they exist
+        if (searchInput) searchInput.value = searchValue;
+        if (navbarSearchInput) navbarSearchInput.value = searchValue;
+        loadEmails(1);
+      }
+    });
+
+    // Helper function to escape HTML
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    
+    // Function to search emails
+    function searchEmails() {
+      const searchInput = document.getElementById('searchInput');
+      if (!searchInput) {
+        console.error('Search input not found');
+        return;
+      }
+      
+      const searchQuery = searchInput.value.toLowerCase().trim();
+      
+      // If search query is empty, reload the first page
+      if (!searchQuery) {
+        currentPage = 1;
+        loadEmails(currentPage);
+        return;
+      }
+      
+      // If we have cached emails, we can filter them locally
+      if (cachedEmails && cachedEmails.length > 0) {
+        const filteredEmails = cachedEmails.filter(email => {
+          return (email.sender && email.sender.toLowerCase().includes(searchQuery)) ||
+                 (email.subject && email.subject.toLowerCase().includes(searchQuery)) ||
+                 (email.snippet && email.snippet.toLowerCase().includes(searchQuery));
+        });
+        
+        renderEmails(filteredEmails);
+        updateEmailCount(filteredEmails.length, filteredEmails.length);
+        pageInfoElement.textContent = filteredEmails.length > 0 
+          ? `Showing all ${filteredEmails.length} results for "${searchQuery}"` 
+          : `No results found for "${searchQuery}"`;
+          
+        // Disable pagination during search
+        prevPageBtn.disabled = true;
+        nextPageBtn.disabled = true;
+      } else {
+        // If no cached emails, we need to search on the server
+        loadEmails(1, searchQuery);
+      }
+      
+      // Update URL with search parameter
+      updateURL(currentPage, searchQuery);
+    }
+    
+    // Function to load emails with proper error handling
+    async function loadEmails(page = null, searchQuery = null) {
+      try {
+        // Show loading state
+        const tbody = document.getElementById('emailTableBody');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr class="loading-placeholder">
+              <td colspan="7" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading emails...</p>
+              </td>
+            </tr>
+          `;
+        }
+        
+        // Hide previous error message if shown
+        const errorAlert = document.getElementById('errorAlert');
+        if (errorAlert) {
+          errorAlert.style.display = 'none';
+        }
+        
+        // Get parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        currentPage = page !== null ? page : parseInt(urlParams.get('page')) || 1;
+        pageSize = parseInt(document.getElementById('pageSizeSelect')?.value) || 10;
+        
+        // Get search query from function parameter, or from search inputs, or from URL
+        const searchTerm = searchQuery || 
+                          document.getElementById('searchInput')?.value || 
+                          document.getElementById('navbarSearchInput')?.value || 
+                          urlParams.get('search') || 
+                          '';
+        
+        // Sync search inputs if needed
+        const searchInput = document.getElementById('searchInput');
+        const navbarSearchInput = document.getElementById('navbarSearchInput');
+        if (searchInput && searchTerm) searchInput.value = searchTerm;
+        if (navbarSearchInput && searchTerm) navbarSearchInput.value = searchTerm;
+        
+        console.log('Fetching spam emails from server...', { currentPage, pageSize, searchTerm });
+        const apiUrl = `/api/emails/spam/?page=${currentPage}&page_size=${pageSize}&search=${encodeURIComponent(searchTerm)}`;
+        console.log('API URL:', apiUrl);
+        
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Raw data from server:', data);
+        
+        if (data.status === 'success' && Array.isArray(data.emails)) {
+          console.log('Total spam emails received:', data.emails.length);
+          
+          // Store all emails
+          if (window.allEmails === undefined) window.allEmails = [];
+          if (window.currentEmails === undefined) window.currentEmails = [];
+          if (window.filteredEmails === undefined) window.filteredEmails = [];
+          
+          // If we're on page 1 with no search, cache all emails
+          if (currentPage === 1 && !searchTerm) {
+            window.allEmails = data.emails;
+          }
+          
+          window.currentEmails = data.emails;
+          window.filteredEmails = data.emails;
+          
+          // Update email count display
+          const total = data.total_emails || data.emails.length;
+          const totalPages = data.total_pages || Math.ceil(total / pageSize);
+          
+          // Update email count
+          updateEmailCount(total);
+          
+          // Update page info
+          const pageInfo = searchTerm 
+            ? `Search results for "${searchTerm}"`
+            : `Page ${currentPage} of ${totalPages}`;
+          document.getElementById('pageInfo').textContent = pageInfo;
+          
+          // Update button states
+          updateButtonState(document.getElementById('prevPage'), currentPage <= 1);
+          updateButtonState(document.getElementById('nextPage'), currentPage >= totalPages);
+          
+          // Render the emails
+          renderEmails(data.emails);
+          
+          // Scroll to top of table on page change
+          const tableContainer = document.querySelector('.email-container');
+          if (tableContainer) {
+            tableContainer.scrollTop = 0;
+          }
+          
+          // Update URL with current page and search term
+          updateURL(currentPage, searchTerm);
+        } else {
+          console.error('No emails data returned from server');
+          renderEmptyState('No spam emails found.');
+        }
+      } catch (error) {
+        console.error('Error loading emails:', error);
+        renderError('Failed to load emails. Please try again later.');
+      }
+    }
+    
+    // Function to update email count
+    function updateEmailCount(total) {
+      const countText = `${total} email${total !== 1 ? 's' : ''}`;
+      document.getElementById('emailCount').textContent = countText;
+    }
+    
+    // Function to update button state
+    function updateButtonState(button, isDisabled) {
+      if (button) {
+        button.disabled = isDisabled;
+      }
+    }
+    
+    // Setup pagination controls
+    function setupPaginationControls() {
+      const prevPageBtn = document.getElementById('prevPage');
+      const nextPageBtn = document.getElementById('nextPage');
+      
+      if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (currentPage > 1) {
+            loadEmails(currentPage - 1);
+          }
+        });
+      }
+      
+      if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          loadEmails(currentPage + 1);
+        });
+      }
+    }
+    
+    // Function to update URL with current page and search term
+    function updateURL(page, searchQuery = '') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', page);
+      
+      if (searchQuery) {
+        url.searchParams.set('search', searchQuery);
+      } else {
+        url.searchParams.delete('search');
+      }
+      
+      // Update URL without reloading the page
+      window.history.pushState({}, '', url);
+    }
+    
+    // Function to render empty state
+    function renderEmptyState(message) {
+      const tbody = document.getElementById('emailTableBody');
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <div class="empty-state">
+                <i class="fas fa-exclamation-triangle fa-3x text-muted mb-3"></i>
+                <h5>No Emails Found</h5>
+                <p class="text-muted">${message}</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+    
+    // Function to render error
+    function renderError(message) {
+      const errorAlert = document.getElementById('errorAlert');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      if (errorAlert && errorMessage) {
+        errorMessage.textContent = message;
+        errorAlert.style.display = 'block';
+      }
+      
+      const tbody = document.getElementById('emailTableBody');
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center text-danger py-4">
+              <i class="fas fa-exclamation-circle me-2"></i>
+              ${message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+    
+    // Function to render emails in the table
+    function renderEmails(emails) {
+      const tbody = document.getElementById('emailTableBody');
+      if (!tbody) {
+        console.error('Email table body element not found');
+        return;
+      }
+      
+      tbody.innerHTML = '';
+      
+      if (!emails || emails.length === 0) {
+        renderEmptyState('No spam emails found in this view.');
+        return;
+      }
+      
+      // Process emails
+      emails.forEach(email => {
+        const row = document.createElement('tr');
+        row.classList.add('email-row');
+        row.innerHTML = `
+          <td>
+            <input type="checkbox" class="form-check-input" value="${email.id || ''}">
+          </td>
+          <td>
+            <i class="fas fa-exclamation-triangle text-danger"></i>
+          </td>
+          <td><strong class="email-sender">${escapeHtml(email.sender || '')}</strong></td>
+          <td><strong class="email-subject">${escapeHtml(email.subject || '')}</strong></td>
+          <td><span class="email-snippet">${escapeHtml(email.snippet || '')}</span></td>
+          <td>${formatDate(email.date || '')}</td>
+          <td class="label-column">
+            <span class="badge rounded-pill bg-secondary" style="width: 100%; display: inline-block;">SPAM</span>
+          </td>
+        `;
+        
+        // Add click event to view email details
+        row.addEventListener('click', function(e) {
+          if (!e.target.matches('input[type="checkbox"]')) {
+            window.location.href = `/spam_email_detail/${encodeURIComponent(email.id)}/`;
+          }
+        });
+        
+        tbody.appendChild(row);
+      });
+    }
+    
+    // Function to format date
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      
+      const date = new Date(dateString);
+      
+      // Format: MMM DD (e.g., "Apr 15")
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = months[date.getMonth()];
+      const day = date.getDate();
+      
+      return `${month} ${day}`;
+    }
+
+    // Function to debounce search input
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Function to toggle labels
+    function toggleLabels() {
+      const labelColumn = document.querySelector('.label-column');
+      const toggleBtn = document.getElementById('toggleLabelsBtn');
+      const toggleText = document.getElementById('toggleLabelsBtnText');
+      
+      if (labelColumn.style.display === 'none') {
+        labelColumn.style.display = '';
+        toggleText.textContent = 'Hide Labels';
+      } else {
+        labelColumn.style.display = 'none';
+        toggleText.textContent = 'Show Labels';
+      }
+    }
+
+    // Function to move selected emails to inbox
+    function moveToInbox() {
+      const selectedEmails = getSelectedEmails();
+      if (selectedEmails.length === 0) {
+        alert('Please select emails to move to inbox');
+        return;
+      }
+      
+      // Send request to move emails to inbox
+      fetch('/api/emails/move-to-inbox/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email_ids: selectedEmails }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            loadEmails();
+          } else {
+            alert('Error moving emails to inbox');
+          }
+        })
+        .catch(error => {
+          console.error('Error moving emails to inbox:', error);
+          alert('Error moving emails to inbox');
+        });
+    }
+
+    // Function to delete selected emails
+    function deleteSelected() {
+      const selectedEmails = getSelectedEmails();
+      if (selectedEmails.length === 0) {
+        alert('Please select emails to delete');
+        return;
+      }
+      
+      if (confirm('Are you sure you want to permanently delete these emails?')) {
+        // Send request to delete emails
+        fetch('/api/emails/delete/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email_ids: selectedEmails }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              loadEmails();
+            } else {
+              alert('Error deleting emails');
+            }
+          })
+          .catch(error => {
+            console.error('Error deleting emails:', error);
+            alert('Error deleting emails');
+          });
+      }
+    }
+
+    // Function to get selected email IDs
+    function getSelectedEmails() {
+      const checkboxes = document.querySelectorAll('#emailTableBody input[type="checkbox"]:checked');
+      return Array.from(checkboxes).map(checkbox => checkbox.value);
+    }
+
+    // Function to refresh emails
+    function refreshEmails() {
+      currentPage = 1;
+      loadEmails();
+    }
+
+    // Function to show error message
+    function showError(message) {
+      console.error('Error:', message);
+      
+      // Try to show error in the error alert div
+      const errorAlert = document.getElementById('errorAlert');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      if (errorAlert && errorMessage) {
+        errorMessage.textContent = message;
+        errorAlert.style.display = 'block';
+      }
+      
+      // Also show error in the table for visibility
+      const tbody = document.getElementById('emailTableBody');
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center text-danger py-4">
+              <i class="fas fa-exclamation-circle me-2"></i>
+              ${message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

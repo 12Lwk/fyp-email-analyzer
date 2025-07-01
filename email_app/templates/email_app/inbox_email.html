@@ -1,0 +1,917 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Email Analytics - Inbox</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/inbox_email.css' %}" />
+  <!-- Add category colors CSS last to ensure it takes precedence -->
+  <link rel="stylesheet" href="{% static 'css/category_colors.css' %}" />
+
+  <style>
+    /* Sidebar Styles */
+    .sidebar {
+      width: 250px;
+      min-height: 100vh;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      transition: all 0.3s;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Compose Email Form Styles */
+    .compose-email-form {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .compose-field {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .compose-field label {
+      width: 60px;
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+
+    .compose-field input.form-control-plaintext {
+      border: none;
+      padding: 0.375rem 0;
+      flex-grow: 1;
+    }
+
+    .compose-field input.form-control-plaintext:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .compose-field .compose-actions {
+      margin-left: auto;
+    }
+
+    .compose-body {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .compose-body .form-control {
+      min-height: 250px;
+      resize: none;
+    }
+
+    .btn-icon {
+      color: #495057;
+      background: transparent;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      margin: 0 2px;
+    }
+
+    .btn-icon:hover {
+      color: #212529;
+      background-color: #e9ecef;
+      border-radius: 0.25rem;
+    }
+    
+    /* Filter Styling */
+    .email-controls {
+      align-items: center;
+    }
+    
+    .email-controls .btn-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .email-controls .dropdown-menu {
+      max-height: 350px;
+      overflow-y: auto;
+      padding: 8px !important;
+    }
+    
+    /* Filter Dropdown Styling */
+    .dropdown-toggle {
+      min-width: 150px;
+      text-align: center;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Checkbox container style improvements */
+    .form-check {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 4px;
+      transition: background-color 0.15s ease;
+      margin-bottom: 2px;
+      position: relative;
+      width: 100%;
+    }
+    
+    /* Fix for dropdown form checks specifically */
+    .dropdown-menu .form-check {
+      margin: 0;
+      padding: 6px 8px;
+    }
+    
+    .form-check:hover {
+      background-color: rgba(0,0,0,0.05);
+    }
+    
+    /* Fix checkbox alignment */
+    .form-check-input {
+      margin-top: 0;
+      margin-right: 10px;
+      position: static;
+      min-width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    
+    /* Make labels properly aligned with checkboxes */
+    .form-check-label {
+      cursor: pointer;
+      font-size: 0.95rem;
+      flex-grow: 1;
+      margin-left: 0;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    /* Fix dropdown menus */
+    .dropdown-menu {
+      width: auto;
+      min-width: 220px !important;
+      padding: 8px;
+    }
+    
+    /* Ensure checkbox is visible */
+    .category-filter-checkbox, .priority-filter-checkbox {
+      position: static !important;
+      margin-left: 0 !important;
+      z-index: 2;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      width: 16px;
+      height: 16px;
+      float: none !important;
+      flex-shrink: 0;
+    }
+    
+    /* Remove the previous conflicting styles */
+    .dropdown-menu li label {
+      display: inline-flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0;
+    }
+    
+    /* Highlight selected categories */
+    #categoryMultiSelectDropdown.has-selections, #priorityFilterDropdown.has-selections {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+    }
+    
+    /* Fix for checkbox spacing and alignment */
+    .dropdown-menu li {
+      position: relative;
+    }
+    
+    #categoriesMultiSelectList, #priorityFilterList {
+      border: 1px solid rgba(0,0,0,.15);
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+    }
+  </style>
+
+</head>
+<body>
+  {% csrf_token %}
+  
+  <!-- Error Container -->
+  <div id="errorContainer" class="alert alert-danger alert-dismissible fade show" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1050;">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <span id="errorMessage"></span>
+    <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'"></button>
+  </div>
+  
+  <!-- Loading Spinner -->
+  <div id="loadingSpinner" class="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1040;">
+    <div class="position-absolute top-50 start-50 translate-middle text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading emails...</p>
+    </div>
+  </div>
+  
+  <!-- Email Table Loading State -->
+  <div id="tableLoadingSpinner" class="text-center py-5" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading emails...</p>
+  </div>
+
+  <!-- Email Table Error State -->
+  <div id="tableError" class="text-center py-5" style="display: none;">
+    <i class="fas fa-exclamation-circle text-danger fa-3x"></i>
+    <h5 class="mt-3">Error Loading Emails</h5>
+    <p id="tableErrorMessage" class="text-muted">An error occurred while loading emails.</p>
+    <button class="btn btn-primary mt-3" onclick="retryLoadEmails()">
+      <i class="fas fa-sync-alt me-1"></i> Try Again
+    </button>
+  </div>
+
+  <!-- No Emails State -->
+  <div id="noEmails" class="text-center py-5" style="display: none;">
+    <i class="fas fa-inbox fa-3x text-muted"></i>
+    <h5 class="mt-3">No Emails Found</h5>
+    <p class="text-muted">Your inbox is empty.</p>
+    <button class="btn btn-primary mt-3" onclick="refreshEmails()">
+      <i class="fas fa-sync-alt me-1"></i> Refresh
+    </button>
+  </div>
+
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <i class="fa fa-envelope-open"></i>
+          <span>Email Analytics</span>
+        </div>
+        <button id="sidebar-close" class="btn-close d-md-none"></button>
+      </div>
+
+      <div class="sidebar-user">
+        <img src="{% static 'images/UserProfileWhite.jpg' %}" alt="User Profile" class="user-avatar" id="sidebarUserAvatar">
+        <div class="user-info">
+          <h6 id="sidebarDisplayName">{{ user_email|slice:":-10"|default:"User" }}</h6>
+          <span id="sidebarEmail">{{ user_email }}</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-item">
+          <a href="{% url 'email_app:email_dashboard' %}" class="nav-link">
+            <i class="fa fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a href="{% url 'email_app:inbox_email' %}" class="nav-link">
+            <i class="fa fa-inbox"></i>
+            <span>Inbox</span>
+            <span class="badge" id="inboxCount"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:sent_email' %}" class="nav-link">
+            <i class="fa fa-paper-plane"></i>
+            <span>Sent</span>
+            <span class="badge" id="sentCount"></span>
+          </a>
+        </li>
+        
+        <li class="nav-divider"></li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#composeModal">
+            <i class="fa fa-plus-circle"></i>
+            <span>Compose</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:spam_email' %}" class="nav-link">
+            <i class="fa fa-exclamation-triangle"></i>
+            <span>Spam</span>
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:settings' %}" class="nav-link">
+            <i class="fa fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:logout' %}" class="nav-link text-danger">
+            <i class="fa fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="online-status">
+          <span class="status-dot online"></span>
+          <span>Online</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper" class="w-100">
+      <!-- Hidden form for email detail navigation -->
+      <form id="emailDetailForm" method="GET" action="" style="display: none;">
+        <input type="hidden" id="emailDetailId" name="id">
+      </form>
+      
+      <!-- Top Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container-fluid">
+          <button class="btn" id="menu-toggle" title="Toggle Sidebar (Ctrl+B)">
+            <i class="fas fa-bars"></i>
+          </button>
+          <form class="d-flex ms-auto my-2 my-lg-0">
+            <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search" />
+            <button class="btn btn-outline-secondary" type="submit">
+              <i class="fa fa-search"></i>
+            </button>
+          </form>
+        </div>
+      </nav>
+      
+      <!-- Inbox Content -->
+      <div class="container-fluid py-3">
+        <!-- Email Controls -->
+        <div class="email-controls d-flex flex-wrap justify-content-between align-items-center mb-3">
+          <div class="d-flex flex-wrap gap-2 mb-2 mb-md-0">
+            <button class="btn btn-outline-secondary" onclick="refreshEmails()" title="Refresh emails">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="btn btn-outline-secondary toggle-labels-btn" onclick="toggleLabels()" id="toggleLabelsBtn" title="Toggle label visibility">
+              <i class="fas fa-tags"></i> <span id="toggleLabelsBtnText">Hide Labels</span>
+            </button>
+            
+            <!-- Multi-Select Category Dropdown -->
+            <div class="dropdown d-inline-block">
+              <button class="btn btn-outline-primary dropdown-toggle" type="button" id="categoryMultiSelectDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <i class="fas fa-filter me-1"></i> Select Categories
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="categoryMultiSelectDropdown" id="categoriesMultiSelectList" style="padding: 10px; min-width: 250px;">
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="all" id="categoryCheckAll" checked>
+                     <label class="form-check-label w-100" for="categoryCheckAll">
+                       All Categories
+                     </label>
+                   </div>
+                 </li>
+                 <li><hr class="dropdown-divider"></li>
+                 <li> 
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Work or Business Email" id="categoryCheckWork">
+                     <label class="form-check-label w-100" for="categoryCheckWork">
+                       Work <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Finance & Transaction Email" id="categoryCheckFinance">
+                     <label class="form-check-label w-100" for="categoryCheckFinance">
+                       Finance <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Personal Email" id="categoryCheckPersonal">
+                     <label class="form-check-label w-100" for="categoryCheckPersonal">
+                       Personal <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Meeting & Schedule Email" id="categoryCheckMeetings">
+                     <label class="form-check-label w-100" for="categoryCheckMeetings">
+                       Meetings <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Internal Policies & HR Updates Email" id="categoryCheckHR">
+                     <label class="form-check-label w-100" for="categoryCheckHR">
+                       HR Updates <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Legal & Contractual Email" id="categoryCheckLegal">
+                     <label class="form-check-label w-100" for="categoryCheckLegal">
+                       Legal <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                  <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Spam Email" id="categoryCheckSpam">
+                     <label class="form-check-label w-100" for="categoryCheckSpam">
+                       Spam <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="IT Alerts & System Notifications Email" id="categoryCheckIT">
+                     <label class="form-check-label w-100" for="categoryCheckIT">
+                       IT Alerts <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Promotions or Marketing Email" id="categoryCheckPromo">
+                     <label class="form-check-label w-100" for="categoryCheckPromo">
+                       Promotions <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Social Media Email" id="categoryCheckSocial">
+                     <label class="form-check-label w-100" for="categoryCheckSocial">
+                       Social Media <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+                 <li>
+                   <div class="form-check">
+                     <input class="form-check-input category-filter-checkbox" type="checkbox" value="Utilities Bill Email" id="categoryCheckUtilities">
+                     <label class="form-check-label w-100" for="categoryCheckUtilities">
+                       Utilities <!-- Simplified Label -->
+                     </label>
+                   </div>
+                 </li>
+              </ul>
+            </div>
+
+            <!-- Priority Filter Dropdown -->
+            <div class="dropdown d-inline-block">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="priorityFilterDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <i class="fas fa-flag me-1"></i> All Priorities
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="priorityFilterDropdown" id="priorityFilterList" style="padding: 10px; min-width: 200px;">
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input priority-filter-checkbox" type="checkbox" value="all" id="priorityCheckAll" checked>
+                    <label class="form-check-label w-100" for="priorityCheckAll">
+                      All Priorities
+                    </label>
+                  </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input priority-filter-checkbox" type="checkbox" value="HIGH" id="priorityCheckHigh">
+                    <label class="form-check-label w-100" for="priorityCheckHigh">
+                      High Priority
+                    </label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input priority-filter-checkbox" type="checkbox" value="MEDIUM" id="priorityCheckMedium">
+                    <label class="form-check-label w-100" for="priorityCheckMedium">
+                      Medium Priority
+                    </label>
+                  </div>
+                </li>
+                <li>
+                  <div class="form-check">
+                    <input class="form-check-input priority-filter-checkbox" type="checkbox" value="LOW" id="priorityCheckLow">
+                    <label class="form-check-label w-100" for="priorityCheckLow">
+                      Low Priority
+                    </label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="flex-grow-1 mx-md-3" style="min-width: 250px;">
+            <div class="input-group">
+              <input type="text" class="form-control" id="emailSearch" placeholder="Search emails...">
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email List Card with Table and Pagination -->
+        <div class="card">
+          <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <select class="form-select form-select-sm me-2" id="pageSizeSelect" style="width: auto;">
+                  <option value="10">10 per page</option>
+                  <option value="25">25 per page</option>
+                  <option value="50">50 per page</option>
+                  <option value="100">100 per page</option>
+                </select>
+                <span class="text-muted" id="emailCount">0 emails</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="me-2" id="pageInfo">Page 1 of 1</span>
+                <div class="btn-group">
+                  <button class="btn btn-outline-primary btn-sm" id="prevPage" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm" id="nextPage" disabled>
+                    Next <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0" id="emailTable">
+                <thead>
+                  <tr>
+                    <th width="30">
+                      <input type="checkbox" class="form-check-input" id="selectAllEmails">
+                    </th>
+                    <th width="30"></th>
+                    <th>Sender</th>
+                    <th>Subject</th>
+                    <th>Snippet</th>
+                    <th width="100">Date</th>
+                    <th width="100">Category</th>
+                    <th width="100">Priority</th>
+                  </tr>
+                </thead>
+                <tbody id="emailTableBody">
+                  <!-- Email rows will be added here dynamically -->
+                  <tr class="loading-placeholder">
+                    <td colspan="8" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2">Loading emails...</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compose Email Modal -->
+  <div class="modal fade" id="composeModal" tabindex="-1" aria-labelledby="composeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="composeModalLabel">Compose Email</h5>
+          <div class="ms-auto">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body p-0">
+          <form id="composeForm" class="compose-email-form">
+            <div class="compose-header p-3 border-bottom">
+              <div class="compose-field">
+                <label>From:</label>
+                <select class="form-select-sm border-0" id="emailFrom">
+                  <option>{{ user_email }}</option>
+                </select>
+              </div>
+              <div class="compose-field">
+                <label>To:</label>
+                <input type="text" class="form-control-plaintext" id="emailTo" placeholder="Recipients">
+                <div class="compose-actions">
+                  <button type="button" class="btn btn-link btn-sm" id="ccButton">Cc</button>
+                  <button type="button" class="btn btn-link btn-sm" id="bccButton">Bcc</button>
+                </div>
+              </div>
+              <div class="compose-field cc-field d-none" id="emailCcContainer">
+                <label>Cc:</label>
+                <input type="text" class="form-control-plaintext" id="emailCc" placeholder="Cc recipients">
+              </div>
+              <div class="compose-field bcc-field d-none" id="emailBccContainer">
+                <label>Bcc:</label>
+                <input type="text" class="form-control-plaintext" id="emailBcc" placeholder="Bcc recipients">
+              </div>
+              <div class="compose-field">
+                <label>Subject: </label>
+                <input type="text" class="form-control-plaintext" id="emailSubject" placeholder="Subject">
+              </div>
+            </div>
+            <div class="compose-body">
+              <div class="email-toolbar border-bottom p-2">
+                <button type="button" class="btn btn-sm btn-icon" id="attachFileBtn" title="Attach files">
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="fileInput" class="d-none" multiple>
+                <button type="button" class="btn btn-sm btn-icon" title="Insert link">
+                  <i class="fas fa-link"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-icon" title="Insert emoji">
+                  <i class="far fa-smile"></i>
+                </button>
+              </div>
+              <textarea class="form-control border-0" id="emailBody" rows="12"></textarea>
+              <div id="attachmentList" class="p-2">
+                <!-- Attachments will be listed here -->
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex justify-content-between w-100">
+            <div>
+              <button type="submit" form="composeForm" class="btn btn-primary">
+                Send <i class="fas fa-paper-plane ms-1"></i>
+              </button>
+              <button type="button" class="btn btn-outline-secondary" id="saveAsDraft">
+                Save as Draft
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{% static 'js/navbar.js' %}"></script>
+  <script src="{% static 'js/inbox_email.js' %}"></script>
+  <script src="{% static 'js/compose_email.js' %}"></script>
+  
+  <!-- Browser compatibility script -->
+  <script>
+    // Additional compatibility script for email navigation
+    window.addEventListener('DOMContentLoaded', function() {
+      console.log('Adding global email row click handlers');
+      
+      // Create a hidden form for navigation
+      const navForm = document.createElement('form');
+      navForm.method = 'GET';
+      navForm.id = 'globalNavForm';
+      navForm.style.display = 'none';
+      document.body.appendChild(navForm);
+      
+      function navigateToEmail(emailId) {
+        if (!emailId) return;
+        
+        try {
+          // Create URL using the correct pattern
+          const emailUrl = `/inbox_email_detail/${encodeURIComponent(emailId)}/`;
+          console.log('Navigating to:', emailUrl);
+          
+          // Method 1: Direct navigation (most reliable)
+          window.location.href = emailUrl;
+        } catch (e) {
+          console.error('Navigation error:', e);
+        }
+      }
+      
+      // Periodically check for email rows and add click handlers
+      setInterval(function() {
+        document.querySelectorAll('.email-row').forEach(function(row) {
+          if (!row.dataset.handlerAdded) {
+            const emailId = row.dataset.emailId;
+            
+            if (emailId) {
+              row.addEventListener('click', function(e) {
+                // Only handle if not clicking checkbox or star
+                if (!e.target.matches('input[type="checkbox"]') && 
+                    !e.target.matches('.fa-star') && 
+                    !e.target.matches('a')) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  
+                  console.log('Global handler: navigating to email ID:', emailId);
+                  navigateToEmail(emailId);
+                }
+              });
+              
+              // Mark as handler added
+              row.dataset.handlerAdded = 'true';
+            }
+          }
+        });
+      }, 1000);
+    });
+  </script>
+
+  <!-- Add modal functionality for CC and BCC buttons -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // CC and BCC toggle buttons
+      const ccButton = document.getElementById('ccButton');
+      const bccButton = document.getElementById('bccButton');
+      
+      if (ccButton) {
+        ccButton.addEventListener('click', function() {
+          const ccField = document.querySelector('.cc-field');
+          if (ccField) {
+            ccField.classList.toggle('d-none');
+            if (!ccField.classList.contains('d-none')) {
+              const ccInput = document.getElementById('emailCc');
+              if (ccInput) ccInput.focus();
+            }
+          }
+        });
+      }
+      
+      if (bccButton) {
+        bccButton.addEventListener('click', function() {
+          const bccField = document.querySelector('.bcc-field');
+          if (bccField) {
+            bccField.classList.toggle('d-none');
+            if (!bccField.classList.contains('d-none')) {
+              const bccInput = document.getElementById('emailBcc');
+              if (bccInput) bccInput.focus();
+            }
+          }
+        });
+      }
+
+      // Add email validation to the "To" field
+      const toField = document.getElementById('emailTo');
+      if (toField) {
+        toField.addEventListener('blur', function() {
+          validateEmailField(this);
+        });
+      }
+
+      // Add validation for CC and BCC fields too
+      const ccField = document.getElementById('emailCc');
+      if (ccField) {
+        ccField.addEventListener('blur', function() {
+          validateEmailField(this, false);
+        });
+      }
+
+      const bccField = document.getElementById('emailBcc');
+      if (bccField) {
+        bccField.addEventListener('blur', function() {
+          validateEmailField(this, false);
+        });
+      }
+
+      // Submit validation
+      const composeForm = document.getElementById('composeForm');
+      if (composeForm) {
+        composeForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Validate the recipient field
+          const toField = document.getElementById('emailTo');
+          if (!validateEmailField(toField)) {
+            // Show error notification
+            showNotification('Please enter a valid recipient email address', 'error');
+            return;
+          }
+          
+          // Collect form data
+          const formData = {
+            to: toField.value.trim(),
+            cc: document.getElementById('emailCc')?.value.trim() || '',
+            bcc: document.getElementById('emailBcc')?.value.trim() || '',
+            subject: document.getElementById('emailSubject')?.value.trim() || 'No Subject',
+            body: document.getElementById('emailBody')?.value || ''
+          };
+          
+          // Process attachments if any
+          const fileInput = document.getElementById('fileInput');
+          if (fileInput && fileInput.files.length > 0) {
+            // Your existing attachment handling code
+          }
+          
+          // Show sending state
+          const sendBtn = document.querySelector('button[type="submit"]');
+          if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Sending...';
+          }
+          
+          // Now proceed with sendEmail function from compose_email.js
+          if (typeof sendEmail === 'function') {
+            sendEmail(formData)
+              .then(response => {
+                if (response.success) {
+                  // Success handling
+                  const modal = bootstrap.Modal.getInstance(document.getElementById('composeModal'));
+                  if (modal) modal.hide();
+                  showNotification(response.message || 'Email sent successfully!', 'success');
+                  composeForm.reset();
+                } else {
+                  // Error handling
+                  showNotification(response.error || 'Failed to send email', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Error sending email:', error);
+                showNotification('An error occurred while sending the email', 'error');
+              })
+              .finally(() => {
+                // Reset button state
+                if (sendBtn) {
+                  sendBtn.disabled = false;
+                  sendBtn.innerHTML = 'Send <i class="fas fa-paper-plane ms-1"></i>';
+                }
+              });
+          } else {
+            console.error('sendEmail function not found');
+            showNotification('Email sending functionality not available', 'error');
+            if (sendBtn) {
+              sendBtn.disabled = false;
+              sendBtn.innerHTML = 'Send <i class="fas fa-paper-plane ms-1"></i>';
+            }
+          }
+        });
+      }
+    });
+
+    // Email validation function
+    function validateEmailField(field, required = true) {
+      if (!field) return false;
+      
+      const value = field.value.trim();
+      // Email regex pattern
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      // Clear previous validation state
+      field.classList.remove('is-invalid');
+      const formGroup = field.closest('.compose-field');
+      const existingFeedback = formGroup?.querySelector('.invalid-feedback');
+      if (existingFeedback) existingFeedback.remove();
+      
+      // Check if empty but required
+      if (required && !value) {
+        field.classList.add('is-invalid');
+        // Add feedback message
+        addInvalidFeedback(field, 'Recipient email is required');
+        return false;
+      }
+      
+      // Skip validation if empty and not required
+      if (!value && !required) return true;
+      
+      // Check for valid email format
+      if (!emailRegex.test(value)) {
+        field.classList.add('is-invalid');
+        // Add feedback message
+        addInvalidFeedback(field, 'Please enter a valid email address');
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Helper to add invalid feedback
+    function addInvalidFeedback(field, message) {
+      const formGroup = field.closest('.compose-field');
+      if (formGroup) {
+        const feedback = document.createElement('div');
+        feedback.className = 'invalid-feedback d-block';
+        feedback.style.marginLeft = '60px'; // Align with input
+        feedback.textContent = message;
+        formGroup.appendChild(feedback);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,549 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox Email Detail</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/inbox_email_detail.css' %}" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    
+    <!-- Compose Email Form Styles -->
+    <style>
+        /* Compose Email Form Styles */
+        .compose-email-form {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .compose-field {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .compose-field label {
+            width: 60px;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .compose-field input.form-control-plaintext {
+            border: none;
+            padding: 0.375rem 0;
+            flex-grow: 1;
+        }
+
+        .compose-field input.form-control-plaintext:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .compose-field .compose-actions {
+            margin-left: auto;
+        }
+
+        .compose-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .compose-body .form-control {
+            min-height: 250px;
+            resize: none;
+        }
+
+        .btn-icon {
+            color: #495057;
+            background: transparent;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            margin: 0 2px;
+        }
+
+        .btn-icon:hover {
+            color: #212529;
+            background-color: #e9ecef;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <i class="fa fa-envelope-open"></i>
+                    <span>Email Analytics</span>
+                </div>
+                <button id="sidebar-close" class="btn-close d-md-none"></button>
+            </div>
+
+            <div class="sidebar-user">
+                <img src="{% static 'images/UserProfileWhite.jpg' %}" alt="User Profile" class="user-avatar" id="sidebarUserAvatar">
+                <div class="user-info">
+                  <h6 id="sidebarDisplayName">{{ user_email|slice:":-10"|default:"User" }}</h6>
+                  <span id="sidebarEmail" data-user-email="{{ user_email }}">{{ user_email }}</span>
+                </div>
+              </div>
+
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="{% url 'email_app:email_dashboard' %}" class="nav-link">
+                        <i class="fa fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="{% url 'email_app:inbox_email' %}" class="nav-link">
+                        <i class="fa fa-inbox"></i>
+                        <span>Inbox</span>
+                        <span class="badge" id="inboxCount"></span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:sent_email' %}" class="nav-link">
+                        <i class="fa fa-paper-plane"></i>
+                        <span>Sent</span>
+                    </a>
+                </li>
+                <li class="nav-divider"></li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#composeModal">
+                        <i class="fa fa-plus-circle"></i>
+                        <span>Compose</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:spam_email' %}" class="nav-link">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <span>Spam</span>
+                    </a>
+                </li>
+                <li class="nav-divider"></li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:settings' %}" class="nav-link">
+                        <i class="fa fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'email_app:logout' %}" class="nav-link text-danger">
+                        <i class="fa fa-sign-out-alt"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="online-status">
+                    <span class="status-dot online"></span>
+                    <span>Online</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" class="w-100">
+            <!-- Top Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+              <div class="container-fluid">
+                <button class="btn" id="menu-toggle" title="Toggle Sidebar (Ctrl+B)">
+                  <i class="fas fa-bars"></i>
+                </button>
+                <form class="d-flex ms-auto my-2 my-lg-0">
+                  <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search" />
+                  <button class="btn btn-outline-secondary" type="submit">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </form>
+              </div>
+            </nav>
+
+            <!-- Email Content -->
+            <div class="container-fluid py-3">
+                <!-- Alert containers for feedback messages -->
+                <div id="alertContainer" class="mb-3"></div>
+                <div id="successAlert" style="display: none;" class="alert alert-success alert-dismissible fade show">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span></span>
+                </div>
+
+                <!-- Back Button -->
+                <div class="mb-3">
+                    <a href="javascript:void(0);" class="back-button text-decoration-none" id="backToInbox">
+                        <i class="fas fa-arrow-left"></i> Back to Inbox
+                    </a>
+                </div>
+
+                <!-- Error Container -->
+                <div id="errorContainer" class="mb-4" {% if not error %}style="display: none;"{% endif %}>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {% if error %}{{ error }}{% else %}An error occurred{% endif %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'email_app:inbox_email' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-1"></i> Return to Inbox
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingContainer" class="text-center py-5" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Loading email content...</p>
+                </div>
+
+                <!-- Main Content Area -->
+                <div id="emailContentContainer" {% if error %}style="display: none;"{% endif %}>
+                    <!-- Debug Info (only visible in development) -->
+                    <!-- {% if debug %}
+                    <div class="alert alert-info mb-4">
+                        <h5>Debug Information</h5>
+                        <pre>{{ email }}</pre>
+                    </div>
+                    {% endif %}-->
+                    
+                    <!-- Email Header Section with Correction Controls -->
+                    <div class="d-flex flex-row flex-wrap align-items-start justify-content-between mb-1" style="margin-bottom: 0.5rem !important;">
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <h2 id="emailSubject" class="card-title mb-0" style="margin-bottom: 0 !important;">
+                                {% if email.subject and email.subject != '' %}
+                                    {{ email.subject }}
+                                {% elif email.display_subject and email.display_subject != '' %}
+                                    {{ email.display_subject }}
+                                {% else %}
+                                    No Subject
+                                {% endif %}
+                            </h2>
+                            <div class="email-priority-category-badges mb-0" style="margin-bottom: 0 !important;">
+                                <span class="email-priority priority-{{ email.priority|lower|default:'default' }}">
+                                    <i class="fas fa-flag me-1"></i>{{ email.priority|default:"Default" }}
+                                </span>
+                                <span class="email-category category-{{ email.category|lower|cut:" "|cut:"&"|cut:"-"|cut:"."|cut:","|default:"uncategorized" }}">
+                                    <i class="fas fa-tag me-1"></i>{{ email.category|default:"Uncategorized" }}
+                                </span>
+                            </div>
+                            <!-- Correction controls below subject and badges -->
+                            <div class="row align-items-end g-2 mb-3" style="max-width: 700px;">
+                                <div class="col-md-5">
+                                    <label for="category-select" class="form-label mb-1">Correct Category:</label>
+                                    <select id="category-select" class="form-select form-select-sm">
+                                        {% for cat in all_categories %}
+                                            <option value="{{ cat }}" {% if cat == email.category %}selected{% endif %}>{{ cat }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="priority-select" class="form-label mb-1">Correct Priority:</label>
+                                    <select id="priority-select" class="form-select form-select-sm">
+                                        {% for prio in all_priorities %}
+                                            <option value="{{ prio }}" {% if prio == email.priority %}selected{% endif %}>{{ prio|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button id="save-corrections-btn" class="btn btn-success btn-sm d-flex align-items-center justify-content-center"
+                                            title="Save Corrections" style="height: 36px; width: 36px; border-radius: 50%; box-shadow: 0 2px 6px rgba(44, 62, 80, 0.08);">
+                                        <i class="fas fa-check" style="font-size: 1.2rem;"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="email-id" value="{{ email.id }}">
+                                <div class="col-12">
+                                    <div id="correction-success" class="alert alert-success mt-2 py-2 px-3" style="display:none; font-size: 0.95rem;">
+                                        <i class="fas fa-check-circle me-1"></i>Corrections saved!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Removed correction-controls card from the right -->
+                    </div>
+
+                    <!-- Email Metadata -->
+                    <div class="email-meta p-3 mb-3 rounded">
+                        <p><strong>From:</strong> <span id="emailFrom">{{ email.sender }}</span></p>
+                        <p><strong>To:</strong> <span id="emailTo">{{ email.recipients|stringformat:'s'|slice:'2:-2'|default:"(No recipients)" }}</span></p>
+                        <p class="email-details date"><strong>Date:</strong> <span data-date="{{ email.date }}">{{ email.date }}</span></p>
+                    </div>
+
+                    <!-- Message Status -->
+                    <div class="message-status mb-3">
+                        <h6><i class="fas fa-info-circle"></i> Message Status</h6>
+                        <div id="messageStatus">
+                            <!-- Read Status -->
+                            <span class="badge {% if email.unread %}bg-primary{% else %}bg-success{% endif %}">
+                                <i class="fas {% if email.unread %}fa-envelope{% else %}fa-envelope-open{% endif %}"></i>
+                                {{ email.unread|yesno:"Unread,Read" }}
+                            </span>
+                            <!-- Starred -->
+                            {% if email.star %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-star"></i> Starred
+                                </span>
+                            {% endif %}
+                            
+                            <!-- Attachments -->
+                            {% if email.has_attachments %}
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-paperclip"></i> Has Attachments
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="email-content" id="emailContent">
+                        {{ email.snippet|safe|default:"No content available" }}
+                    </div>
+
+                    <!-- AI Analysis Section -->
+                    <div class="ai-analysis-section mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-robot text-primary me-2"></i>AI Analysis
+                            </h5>
+                            <button id="generateAnalysisBtn" class="btn btn-sm btn-primary">
+                                <i class="fas fa-magic me-1"></i>Generate Analysis
+                            </button>
+                        </div>
+                        <div id="analysisLoading" class="text-center d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Analyzing email content...</p>
+                        </div>
+                        <div id="analysisResult" class="card d-none">
+                            <div class="card-body">
+                                <div class="analysis-category mb-3">
+                                    <h6 class="text-primary">Key Points</h6>
+                                    <div id="keyPoints" class="analysis-content"></div>
+                                </div>
+                                <div class="analysis-category mb-3">
+                                    <h6 class="text-primary">Sentiment</h6>
+                                    <div id="sentiment" class="analysis-content"></div>
+                                </div>
+                                <div class="analysis-category mb-3">
+                                    <h6 class="text-primary">Suggested Actions</h6>
+                                    <div id="suggestedActions" class="analysis-content"></div>
+                                </div>
+                                <div class="analysis-category">
+                                    <h6 class="text-primary">Suggested Reply</h6>
+                                    <div id="suggestedReply" class="analysis-content"></div>
+                                    <button id="useSuggestedReplyBtn" class="btn btn-sm btn-outline-primary mt-2" onclick="useSuggestedReply()">
+                                        <i class="fas fa-reply me-1"></i>Use Suggested Reply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if email.has_attachments and email.attachments %}
+                        <div id="emailAttachments" class="mt-4">
+                            <h6><i class="fas fa-paperclip"></i> Attachments</h6>
+                            <div class="list-group">
+                                {% for attachment in email.attachments %}
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-file me-2"></i>
+                                            {{ attachment }}
+                                        </div>
+                                        <div class="btn-group">
+                                            <a href="/api/attachment/{{ email.id }}/{{ attachment|urlencode }}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               download="{{ attachment }}" 
+                                               title="Download">
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                    onclick="previewAttachment('{{ email.id }}', '{{ attachment|escapejs }}')" 
+                                                    title="Preview">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <hr class="my-4">
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons text-end">
+                        <!-- Voice Command Button -->
+                        <button class="btn btn-outline-primary voice-command-btn me-2" id="voiceCommandBtn" title="Voice Command">
+                            <i class="fas fa-microphone"></i> Voice Command
+                        </button>
+                        <!-- Email action buttons -->
+                        <button class="btn btn-outline-primary reply-btn" data-email-id="{{ email.id }}" title="Reply">
+                            <i class="fas fa-reply"></i> Reply
+                        </button>
+                        
+                        <button class="btn btn-outline-primary forward-btn" data-email-id="{{ email.id }}" title="Forward">
+                            <i class="fas fa-forward"></i> Forward
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compose Email Modal -->
+    <div class="modal fade" id="composeModal" tabindex="-1" aria-labelledby="composeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="composeModalLabel">Compose Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeComposeModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="composeForm" class="compose-email-form">
+                        <!-- From field -->
+                        <div class="compose-field">
+                            <label for="emailFrom" class="form-label">From:</label>
+                            <input type="text" class="form-control" id="emailFrom" readonly>
+                        </div>
+                        
+                        <!-- To field -->
+                        <div class="compose-field">
+                            <label for="emailTo" class="form-label">To:</label>
+                            <input type="email" class="form-control" id="emailTo" required>
+                        </div>
+                        
+                        <!-- CC field -->
+                        <div class="compose-field cc-field d-none">
+                            <label for="emailCc" class="form-label">Cc:</label>
+                            <input type="email" class="form-control" id="emailCc">
+                        </div>
+                        
+                        <!-- BCC field -->
+                        <div class="compose-field bcc-field d-none">
+                            <label for="emailBcc" class="form-label">Bcc:</label>
+                            <input type="email" class="form-control" id="emailBcc">
+                        </div>
+                        
+                        <!-- Field controls -->
+                        <div class="compose-field-controls">
+                            <button type="button" class="btn btn-link" id="ccButton">Cc</button>
+                            <button type="button" class="btn btn-link" id="bccButton">Bcc</button>
+                        </div>
+                        
+                        <!-- Subject field -->
+                        <div class="compose-field">
+                            <label for="emailSubject" class="form-label">Subject:</label>
+                            <input type="text" class="form-control" id="emailSubject">
+                        </div>
+                        
+                        <!-- Email body -->
+                        <div class="compose-field">
+                            <textarea class="form-control compose-body" id="emailBody" rows="10"></textarea>
+                        </div>
+                        
+                        <!-- Attachments -->
+                        <div class="compose-field">
+                            <div class="btn-toolbar" role="toolbar" style="display: none;">
+                                <div class="btn-group me-2" role="group">
+                                    <button type="button" class="btn btn-outline-secondary" id="attachFileBtn">
+                                        <i class="fas fa-paperclip"></i> Attach Files
+                                    </button>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-secondary">
+                                        <i class="fas fa-smile"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="file" class="d-none" id="fileInput" multiple>
+                            <div id="attachmentList" class="mt-2"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeComposeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="sendEmailBtn">
+                        <i class="fas fa-paper-plane me-1"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Command Status -->
+    <div id="voiceCommandStatus" class="alert" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Listening...</span>
+            </div>
+            <div>Listening... Say a command</div>
+        </div>
+        <div class="mt-2 small">
+            Available commands:
+            <ul class="mb-0">
+                <li>"Read this email"</li>
+                <li>"Reply to this email"</li>
+                <li>"Forward this email"</li>
+                <li>"Analyze this email"</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/hotword_detection.js' %}"></script>
+    <script src="{% static 'js/voice_interaction.js' %}"></script>
+    <script src="{% static 'js/compose_email.js' %}"></script>
+    <script src="{% static 'js/inbox_email_detail.js' %}"></script>
+    <script src="{% static 'js/ai_analysis.js' %}"></script>
+
+    <!-- Initialize Email Actions and Compose Modal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing email functionality');
+            
+            // Format dates on page load
+            const dateElements = document.querySelectorAll('[data-date]');
+            dateElements.forEach(element => {
+                const originalDate = element.getAttribute('data-date');
+                if (originalDate) {
+                    element.textContent = moment(originalDate).format('dddd, MMMM D, YYYY [at] h:mm A');
+                }
+            });
+            
+            // Initialize email actions
+            if (typeof initializeEmailActions === 'function') {
+                initializeEmailActions();
+            } else {
+                console.error('initializeEmailActions function not found');
+            }
+
+            // Initialize voice command functionality with delay
+            setTimeout(() => {
+                const voiceCommandBtn = document.getElementById('voiceCommandBtn');
+                if (voiceCommandBtn && typeof initSpeechRecognition === 'function') {
+                    initSpeechRecognition();
+                }
+            }, 1000);
+
+            // Initialize AI analysis
+            if (typeof initializeAIAnalysis === 'function') {
+                initializeAIAnalysis();
+            }
+        });
+    </script>
+</body>
+</html> 

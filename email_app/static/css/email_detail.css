@@ -1,0 +1,51 @@
+.email-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+}
+
+.sender-info {
+    margin-bottom: 10px;
+}
+
+.sender-name {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.sender-email {
+    color: #666;
+    margin-left: 8px;
+    font-size: 0.9em;
+}
+
+.email-metadata {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.priority-badge.high {
+    background-color: #fde2e2;
+    color: #dc3545;
+}
+
+.priority-badge.medium {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.priority-badge.low {
+    background-color: #d4edda;
+    color: #155724;
+} 

@@ -1,0 +1,477 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Email Analytics - Settings</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/settings.css' %}" />
+</head>
+<body>
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <i class="fa fa-envelope-open"></i>
+          <span>Email Analytics</span>
+        </div>
+        <button id="sidebar-close" class="btn-close d-md-none"></button>
+      </div>
+
+      <div class="sidebar-user">
+        <img src="{% static 'images/UserProfileWhite.jpg' %}" alt="User Profile" class="user-avatar" id="sidebarUserAvatar">
+        <div class="user-info">
+          <h6 id="sidebarDisplayName">{{ user_email|slice:":-10"|default:"User" }}</h6>
+          <span id="sidebarEmail">{{ user_email }}</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-item">
+          <a href="{% url 'email_app:email_dashboard' %}" class="nav-link">
+            <i class="fa fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:inbox_email' %}" class="nav-link">
+            <i class="fa fa-inbox"></i>
+            <span>Inbox</span>
+            <span class="badge" id="inboxCount"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:sent_email' %}" class="nav-link">
+            <i class="fa fa-paper-plane"></i>
+            <span>Sent</span>
+          </a>
+        </li>
+   
+        <li class="nav-divider"></li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#composeModal">
+            <i class="fa fa-plus-circle"></i>
+            <span>Compose</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:spam_email' %}" class="nav-link">
+            <i class="fa fa-exclamation-triangle"></i>
+            <span>Spam</span>
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li class="nav-item active">
+          <a href="{% url 'email_app:settings' %}" class="nav-link">
+            <i class="fa fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'email_app:logout' %}" class="nav-link text-danger">
+            <i class="fa fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="online-status">
+          <span class="status-dot online"></span>
+          <span>Online</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper" class="w-100 bg-light">
+      <!-- Top Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container-fluid">
+          <button class="btn" id="menu-toggle" title="Toggle Sidebar (Ctrl+B)">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h5 class="mb-0 ms-2">Settings</h5>
+        </div>
+      </nav>
+
+      <!-- Settings Content -->
+      <div class="container-fluid py-4">
+        <div class="row">
+          <!-- Settings Navigation -->
+          <div class="col-md-3">
+            <div class="list-group settings-nav">
+              <a href="#profile" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                <i class="fas fa-user me-2"></i>Profile
+              </a>
+              <!--<a href="#email" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                <i class="fas fa-envelope me-2"></i>Email Settings
+              </a>
+              <a href="#display" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                <i class="fas fa-desktop me-2"></i>Display Settings
+              </a>
+              <a href="#notifications" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                <i class="fas fa-bell me-2"></i>Notifications
+              </a>
+              <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                <i class="fas fa-shield-alt me-2"></i>Security
+              </a>-->
+            </div>
+          </div>
+
+          <!-- Settings Content -->
+          <div class="col-md-9">
+            <div class="tab-content">
+              <!-- Profile Settings -->
+              <div class="tab-pane fade show active" id="profile">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Profile Settings</h5>
+                  </div>
+                  <div class="card-body">
+                    <form id="profileForm">
+                      <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                          <img src="{% static 'images/UserProfileWhite.jpg' %}" alt="Profile Picture" id="profileImage" 
+                               class="rounded-circle profile-picture mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                          <div class="profile-picture-overlay">
+                            <button type="button" class="btn btn-light btn-sm" id="changeProfilePicture">
+                              <i class="fas fa-camera"></i> Change Picture
+                            </button>
+                          </div>
+                          <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="displayName" class="form-label">Display Name</label>
+                        <input type="text" class="form-control" id="displayName" value="{{ user_email|slice:":-10" }}" name="display_name">
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="emailAddress" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="emailAddress" value="{{ user_email }}" readonly>
+                        <small class="text-muted">Email address cannot be changed</small>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="timeZone" class="form-label">Time Zone</label>
+                        <select class="form-select" id="timeZone">
+                          <option value="UTC+8" selected>Asia/Kuala Lumpur (UTC+8)</option>
+                          <option value="UTC+0">UTC</option>
+                          <option value="UTC+1">Central European Time</option>
+                          <option value="UTC-5">Eastern Time</option>
+                          <option value="UTC-8">Pacific Time</option>
+                        </select>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email Settings -->
+              <div class="tab-pane fade" id="email">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Email Settings</h5>
+                  </div>
+                  <div class="card-body">
+                    <form id="emailSettingsForm">
+                      <div class="mb-3">
+                        <label class="form-label d-block">Display Options</label>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="showSnippets" checked>
+                          <label class="form-check-label" for="showSnippets">Show email snippets in list</label>
+                        </div>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="showAttachments" checked>
+                          <label class="form-check-label" for="showAttachments">Show attachment indicators</label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label d-block">Sending Options</label>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="confirmDelete">
+                          <label class="form-check-label" for="confirmDelete">Confirm before deleting emails</label>
+                        </div>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="spellCheck" checked>
+                          <label class="form-check-label" for="spellCheck">Enable spell check</label>
+                        </div>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="autoSave" checked>
+                          <label class="form-check-label" for="autoSave">Auto-save drafts</label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="defaultFont" class="form-label">Default Font</label>
+                        <select class="form-select" id="defaultFont">
+                          <option value="Arial">Arial</option>
+                          <option value="Helvetica">Helvetica</option>
+                          <option value="Times New Roman">Times New Roman</option>
+                          <option value="Calibri" selected>Calibri</option>
+                        </select>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">Save Email Settings</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Display Settings -->
+              <div class="tab-pane fade" id="display">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Display Settings</h5>
+                  </div>
+                  <div class="card-body">
+                    <form id="displaySettingsForm">
+                      <div class="mb-3">
+                        <label class="form-label d-block">Layout Options</label>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="showLabels" checked>
+                          <label class="form-check-label" for="showLabels">Show email labels</label>
+                        </div>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="compactView">
+                          <label class="form-check-label" for="compactView">Use compact view</label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="defaultPageSize" class="form-label">Default Emails per Page</label>
+                        <select class="form-select" id="defaultPageSize">
+                          <option value="10">10</option>
+                          <option value="25" selected>25</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Theme</label>
+                        <div class="theme-options">
+                          <div class="form-check">
+                            <input type="radio" class="form-check-input" name="theme" id="themeLight" checked>
+                            <label class="form-check-label" for="themeLight">Light</label>
+                          </div>
+                          <div class="form-check">
+                            <input type="radio" class="form-check-input" name="theme" id="themeDark">
+                            <label class="form-check-label" for="themeDark">Dark</label>
+                          </div>
+                          <div class="form-check">
+                            <input type="radio" class="form-check-input" name="theme" id="themeSystem">
+                            <label class="form-check-label" for="themeSystem">Use System Theme</label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">Save Display Settings</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Settings -->
+              <div class="tab-pane fade" id="notifications">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Notification Settings</h5>
+                  </div>
+                  <div class="card-body">
+                    <form id="notificationSettingsForm">
+                      <div class="mb-3">
+                        <label class="form-label">Email Notifications</label>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="newEmailNotif" checked>
+                          <label class="form-check-label" for="newEmailNotif">New email notifications</label>
+                        </div>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="mentionNotif" checked>
+                          <label class="form-check-label" for="mentionNotif">Mentions and replies</label>
+                        </div>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="importantNotif" checked>
+                          <label class="form-check-label" for="importantNotif">Important emails only</label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Sound Notifications</label>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="soundEnabled">
+                          <label class="form-check-label" for="soundEnabled">Enable notification sounds</label>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Desktop Notifications</label>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="desktopNotif">
+                          <label class="form-check-label" for="desktopNotif">Enable desktop notifications</label>
+                        </div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">Save Notification Settings</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security Settings -->
+              <div class="tab-pane fade" id="security">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Security Settings</h5>
+                  </div>
+                  <div class="card-body">
+                    <form id="securitySettingsForm">
+                      <div class="mb-4">
+                        <h6>Two-Factor Authentication</h6>
+                        <p class="text-muted">Add an extra layer of security to your account</p>
+                        <button type="button" class="btn btn-outline-primary">Enable 2FA</button>
+                      </div>
+
+                      <div class="mb-4">
+                        <h6>Connected Devices</h6>
+                        <p class="text-muted">Devices that are currently signed in to your account</p>
+                        <div class="list-group">
+                          <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <h6 class="mb-1">Windows PC - Chrome</h6>
+                                <small class="text-muted">Last active: Just now</small>
+                              </div>
+                              <button type="button" class="btn btn-outline-danger btn-sm">Sign Out</button>
+                            </div>
+                          </div>
+                          <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <h6 class="mb-1">iPhone 13 - Mail App</h6>
+                                <small class="text-muted">Last active: 2 hours ago</small>
+                              </div>
+                              <button type="button" class="btn btn-outline-danger btn-sm">Sign Out</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mb-4">
+                        <h6>Login History</h6>
+                        <p class="text-muted">Recent account activity</p>
+                        <div class="list-group">
+                          <div class="list-group-item">
+                            <small class="text-muted">Today, 10:30 AM</small>
+                            <p class="mb-0">Login from Windows PC - Chrome</p>
+                          </div>
+                          <div class="list-group-item">
+                            <small class="text-muted">Yesterday, 8:45 PM</small>
+                            <p class="mb-0">Login from iPhone 13</p>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/navbar.js' %}"></script>
+  <script src="{% static 'js/settings.js' %}"></script>
+  
+  <!-- Compose Email Modal -->
+  <div class="modal fade" id="composeModal" tabindex="-1" aria-labelledby="composeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="composeModalLabel">Compose Email</h5>
+          <div class="ms-auto">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body p-0">
+          <form id="composeForm" class="compose-email-form">
+            <div class="compose-header p-3 border-bottom">
+              <div class="compose-field">
+                <label>From:</label>
+                <select class="form-select-sm border-0" id="emailFrom">
+                  <option>{{ user_email }}</option>
+                </select>
+              </div>
+              <div class="compose-field">
+                <label>To:</label>
+                <input type="text" class="form-control-plaintext" id="emailTo" placeholder="Recipients">
+                <a href="#" class="float-end text-decoration-none me-2" id="ccButton">Cc</a>
+                <a href="#" class="float-end text-decoration-none me-2" id="bccButton">Bcc</a>
+              </div>
+              <div class="compose-field cc-field d-none" id="emailCcContainer">
+                <label>Cc:</label>
+                <input type="text" class="form-control-plaintext" id="emailCc" placeholder="Cc recipients">
+              </div>
+              <div class="compose-field bcc-field d-none" id="emailBccContainer">
+                <label>Bcc:</label>
+                <input type="text" class="form-control-plaintext" id="emailBcc" placeholder="Bcc recipients">
+              </div>
+              <div class="compose-field">
+                <label>Subject:</label>
+                <input type="text" class="form-control-plaintext" id="emailSubject" placeholder="Subject">
+              </div>
+            </div>
+            <div class="compose-body">
+              <div class="email-toolbar border-bottom p-2">
+                <button type="button" class="btn btn-sm btn-icon" id="attachFileBtn" title="Attach files">
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="fileInput" class="d-none" multiple>
+                <button type="button" class="btn btn-sm btn-icon" title="Insert link">
+                  <i class="fas fa-link"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-icon" title="Insert emoji">
+                  <i class="far fa-smile"></i>
+                </button>
+              </div>
+              <textarea class="form-control border-0" id="emailBody" rows="12"></textarea>
+              <div id="attachmentList" class="p-2">
+                <!-- Attachments will be listed here -->
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex justify-content-between w-100">
+            <div>
+              <button type="submit" form="composeForm" class="btn btn-primary">
+                Send <i class="fas fa-paper-plane ms-1"></i>
+              </button>
+              <button type="button" class="btn btn-outline-secondary" id="saveAsDraft">
+                Save as Draft
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static 'js/compose_email.js' %}"></script>
+</body>
+</html>
+

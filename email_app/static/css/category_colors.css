@@ -1,0 +1,169 @@
+
+/* Base category style */
+.email-category {
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0.3rem 0.75rem !important;
+    border-radius: 16px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    width: 100% !important;
+    min-width: 100px !important;
+    max-width: 130px !important;
+    margin: 0 auto !important;
+    text-shadow: 0px 1px 1px rgba(0,0,0,0.3) !important;
+}
+
+/* Category Colors - Exact match with detail page */
+.category-workorbusinessemail, 
+.email-category[data-value="Work"] { 
+    background-color: #84d2f9 !important; 
+    background-image: linear-gradient(135deg, #72acdc, #1e88e5) !important; 
+    color: white !important;
+}
+
+.category-financetransactionemail,
+.email-category[data-value="Finance"] { 
+    background-color: #0db5a4 !important; 
+    background-image: linear-gradient(135deg, #269388, #119184) !important; 
+    color: white !important; 
+}
+
+.category-personalemail,
+.email-category[data-value="Personal"] { 
+    background-color: #bb1b48 !important; 
+    background-image: linear-gradient(135deg, #e51d6d, #da2878) !important; 
+    color: white !important; 
+}
+
+.category-meetingscheduleemail,
+.email-category[data-value="Meetings"] { 
+    background-color: #61c8ff !important; 
+    background-image: linear-gradient(135deg, #44a5f0, #158bd9) !important; 
+    color: white !important; 
+}
+
+.category-internalpolicieshrupdatesemail,
+.email-category[data-value="HR Updates"] { 
+    background-color: #8a60de !important; 
+    background-image: linear-gradient(135deg, #7e57c2, #5e35b1) !important; 
+    color: white !important; 
+}
+
+.category-legalcontractualemail,
+.email-category[data-value="Legal"] { 
+    background-color: #deff83 !important; 
+    background-image: linear-gradient(135deg, #93a52a, #a3ac27) !important; 
+    color: rgb(243, 237, 58) !important; 
+}
+
+.category-spamemail,
+.email-category[data-value="Spam"] { 
+    background-color: #757575 !important; 
+    background-image: linear-gradient(135deg, #9e9e9e, #757575) !important; 
+    color: white !important; 
+}
+
+.category-italertssystemnotificationsemail,
+.email-category[data-value="IT Alerts"] { 
+    background-color: #4e5cf0 !important; 
+    background-image: linear-gradient(135deg, #0935f9, #0828fbe6) !important; 
+    color: white !important; 
+}
+
+.category-promotionsormarketingemail,
+.email-category[data-value="Promotions"] { 
+    background-color: #f88a02 !important; 
+    background-image: linear-gradient(135deg, #e68a01, #fb8c00) !important; 
+    color: white !important; 
+}
+
+.category-socialmediaemail,
+.email-category[data-value="Social Media"] { 
+    background-color: #d258eb !important; 
+    background-image: linear-gradient(135deg, #d448ea, #d342eac4) !important; 
+    color: white !important; 
+}
+
+.category-utilitiesbillemail,
+.email-category[data-value="Utilities"] { 
+    background-color: #43a047 !important; 
+    background-image: linear-gradient(135deg, #66bb6a, #43a047) !important; 
+    color: white !important; 
+}
+
+/* Uncategorized fallback */
+.email-category[data-value="Uncategorized"] {
+    background-color: #546e7a !important;
+    background-image: linear-gradient(135deg, #607d8b, #546e7a) !important;
+    color: white !important;
+}
+
+/* Important overrides */
+.email-category {
+    border: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+.category-workorbusinessemail, .email-category[data-value="Work"] { 
+    background-color: #84d2f9 !important; 
+    background-image: linear-gradient(135deg, #72acdc, #1e88e5) !important; 
+}
+
+.category-financetransactionemail, .email-category[data-value="Finance"] { 
+    background-color: #0db5a4 !important; 
+    background-image: linear-gradient(135deg, #269388, #119184) !important; 
+}
+
+.category-personalemail, .email-category[data-value="Personal"] { 
+    background-color: #bb1b48 !important; 
+    background-image: linear-gradient(135deg, #e51d6d, #da2878) !important; 
+}
+
+.category-meetingscheduleemail, .email-category[data-value="Meetings"] { 
+    background-color: #61c8ff !important; 
+    background-image: linear-gradient(135deg, #44a5f0, #158bd9) !important; 
+}
+
+.category-internalpolicieshrupdatesemail, .email-category[data-value="HR Updates"] { 
+    background-color: #8a60de !important; 
+    background-image: linear-gradient(135deg, #7e57c2, #5e35b1) !important; 
+}
+
+.category-legalcontractualemail, .email-category[data-value="Legal"] { 
+    background-color: #deff83 !important; 
+    background-image: linear-gradient(135deg, #93a52a, #a3ac27) !important; 
+    color: rgb(243, 237, 58) !important; 
+}
+
+.category-spamemail, .email-category[data-value="Spam"] { 
+    background-color: #757575 !important; 
+    background-image: linear-gradient(135deg, #9e9e9e, #757575) !important; 
+}
+
+.category-italertssystemnotificationsemail, .email-category[data-value="IT Alerts"] { 
+    background-color: #4e5cf0 !important; 
+    background-image: linear-gradient(135deg, #0935f9, #0828fbe6) !important; 
+}
+
+.category-promotionsormarketingemail, .email-category[data-value="Promotions"] { 
+    background-color: #f88a02 !important; 
+    background-image: linear-gradient(135deg, #e68a01, #fb8c00) !important; 
+}
+
+.category-socialmediaemail, .email-category[data-value="Social Media"] { 
+    background-color: #d258eb !important; 
+    background-image: linear-gradient(135deg, #d448ea, #d342eac4) !important; 
+}
+
+.category-utilitiesbillemail, .email-category[data-value="Utilities"] { 
+    background-color: #43a047 !important; 
+    background-image: linear-gradient(135deg, #66bb6a, #43a047) !important; 
+} 
