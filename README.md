@@ -82,6 +82,31 @@ Database (PostgreSQL with pgvector)
   - Rule engine refines output using sender history, keywords, and context
   - Generative AI augments with summaries and smart replies
 
+### Email Category Labeling & Balancing
+
+The Enron dataset used in this project did not include category or priority labels, which posed a challenge for supervised learning. To address this, we used the Qwen2.5 large language model (LLM) to automatically generate consistent, context-aware labels for both email category and priority. Each email was passed through a structured prompt, and the model assigned one of several workplace-relevant categories, such as:
+
+- Work or Business Email
+- Finance & Transactions Email
+- Personal Email
+- Meeting & Schedule Email
+- Spam Email
+- IT Alerts & System Notifications Email
+- Internal Policies & HR Updates Email
+- Social Media Email
+- Utilities Bill Email
+- Promotions or Marketing Email
+- Legal & Contractual Email
+
+This LLM-based approach ensured high-quality, context-sensitive labeling, reducing human error and making the dataset suitable for training robust machine learning models.
+
+**Balancing the Dataset:**
+- Categories with more than 15,000 samples were capped at 15,000 (randomly selected)
+- Smaller categories were kept as-is
+- No synthetic samples were added, preserving the quality of text embeddings
+
+Remaining imbalance was handled by using class weights during model training, ensuring the model learned to recognize minority categories effectively.
+
 ### Model Interpretability & Hybrid Adjustment
 
 Despite high accuracy and F1-scores, detailed analysis revealed a consistent bias toward the Medium priority class—especially for borderline or ambiguous emails. To address this, a post-training probability adjustment layer was developed, refining model predictions using domain-specific signals such as:
