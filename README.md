@@ -1,6 +1,6 @@
 # Smart Email Management System
-This is my Final Year Project titled Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization. A Django-based platform for intelligent email management, featuring AI-powered prioritization, categorization, voice commands, analytics dashboard, and seamless Gmail integration.
 
+This is my Final Year Project titled Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization. A Django-based platform for intelligent email management, featuring AI-powered prioritization, categorization, voice commands, analytics dashboard, and seamless Gmail integration.
 ---
 
 ## Project Structure
@@ -19,12 +19,23 @@ manage.py            # Django management script
 
 ## Features
 
-- **AI-Powered Email Classification**: Real-time priority (high/medium/low) and category detection using SVM, XGBoost, and contextual NLP.
-- **Gmail API Integration**: Securely read, send, and manage emails with OAuth2.
+- **AI-Powered Email Classification**: Real-time priority (high/medium/low) and category detection using SVM, XGBoost, contextual NLP, and Google Gemini (Generative AI) models.
+- **Gmail API Integration**: Securely read, send, and manage emails with OAuth2, using the official Gmail API.
+- **Google Generative AI (Gemini API)**: Used for advanced NLP, summarization, and content generation tasks.
+- **Google Cloud APIs**: Integrates with Google Cloud AI Platform, BigQuery, and Storage for scalable AI and data operations.
 - **Voice Commands**: Control your inbox hands-free using browser-based voice recognition (no extra installation required).
 - **Analytics Dashboard**: Visualize trends, response times, and top senders.
 - **Vector Search**: Find similar emails using pgvector.
 - **Dockerized Databases**: PostgreSQL and pgvector for robust storage.
+
+---
+
+## API Integrations
+
+- **Gmail API**: For reading, sending, and managing emails securely with OAuth2 authentication.
+- **Google Gemini API (Generative AI)**: Powers advanced NLP features such as summarization, content generation, and smart replies.
+- **Google Cloud AI Platform**: Supports scalable machine learning and AI model deployment.
+- **Google BigQuery & Google Cloud Storage**: Used for large-scale data storage and analytics (if enabled in your configuration).
 
 ---
 
