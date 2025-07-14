@@ -1,7 +1,7 @@
 # Smart Email Management System
 
-[![Project Status: Complete](https://img.shields.io/badge/Status-Complete-brightgreen.svg)](https://www.repostatus.org/#inactive)
-[![Python Version](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Project Status: Complete](https://img.shields.io/badge/Status-Complete-brightgreen.svg?style=for-the-badge)](https://www.repostatus.org/#inactive)
+[![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
 [![Framework: Django](https://img.shields.io/badge/Framework-Django-092E20.svg?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
 [![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791.svg?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
 
