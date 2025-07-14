@@ -1,170 +1,153 @@
 # Smart Email Management System
 
-*This is my Final Year Project titled Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization.*
+*Final Year Project: Advancing Email Productivity with Hybrid AI and Data Analytics*
 
-A Django-based platform for intelligent email management, featuring a hybrid AI system for prioritization, ML-powered categorization, voice commands, an analytics dashboard, and seamless Gmail integration. This system is designed to transform cluttered inboxes into streamlined, manageable workspaces.
+This project delivers a modern, intelligent email management platform built with Django, combining machine learning, rule-based logic, and generative AI to help users focus on what matters. The system automatically prioritizes, categorizes, and summarizes emails, supports hands-free voice commands, and provides actionable analytics—all while ensuring privacy and scalability.
 
 ---
 
-## Table of Contents
-- [Project Motivation](#project-motivation)
-- [System Architecture](#system-architecture)
-- [Features](#features)
-- [Model Training and Evaluation](#model-training-and-evaluation)
+## Contents
+- [Motivation](#motivation)
+- [System Overview](#system-overview)
+- [Key Features](#key-features)
+- [Data & Modeling](#data--modeling)
 - [API Integrations](#api-integrations)
-- [Setup Instructions](#setup-instructions)
-- [Usage](#usage)
+- [Setup](#setup)
+- [How to Use](#how-to-use)
 - [Database Schema](#database-schema)
 - [Roadmap](#roadmap)
-- [Contributing & Testing](#contributing--testing)
+- [Contributing](#contributing)
 
 ---
 
-## Project Motivation
-The modern professional is often overwhelmed by a high volume of daily emails, leading to decreased productivity and missed critical communications. This project aims to solve that problem by creating an intelligent system that automatically organizes an email inbox. By leveraging machine learning for prioritization and categorization, integrating hands-free voice controls, and providing insightful analytics, this platform helps users focus on what matters most.
+## Motivation
+Email overload is a persistent challenge for professionals. This project aims to transform the inbox experience by leveraging a hybrid AI approach—combining robust machine learning models, domain-specific rules, and generative AI—to deliver reliable, context-aware email organization and insights.
 
 ---
 
-## System Architecture
-The system is built on a modular architecture that ensures scalability and maintainability. The core components interact as follows:
+## System Overview
+The platform is architected for modularity and extensibility, with clear separation between data ingestion, processing, AI services, and user interaction.
 
-```mermaid
-graph TD
-    subgraph User Interface
-        A[Browser Frontend]
-        B[Voice Commands (Web Speech API)]
-    end
+System Architecture:
 
-    subgraph Backend (Django)
-        C{API Endpoints}
-        D[Email Processing & Logic]
-        E{AI/ML Service}
-        F[Database ORM]
-    end
-
-    subgraph Data & AI
-        G[Priority Model (XGBoost)]
-        H[Category Model (SVM)]
-        I[Vector Search (pgvector)]
-        J[Generative AI (Gemini)]
-        K[Custom Priority Scoring Engine]
-    end
-    
-    subgraph Database
-        L[PostgreSQL]
-    end
-
-    A <--> C;
-    B --> A;
-    C --> D;
-    D --> E;
-    E --> G;
-    G -- ML Prediction --> K;
-    D -- Email Data --> K;
-    K -- Final Score --> D;
-    E --> H;
-    E --> I;
-    E --> J;
-    D -- CRUD Operations --> F;
-    F <--> L;
+```
+User Interface
+  ├── Web UI (Inbox, Analytics, Compose, etc.)
+  └── Voice Commands (Web Speech API)
+      ↓
+REST API (Django Backend)
+      ↓
+Email Logic & Orchestration
+  ├── ML Models (XGBoost for Priority, SVM for Category)
+  ├── Rule Engine (Domain-specific heuristics)
+  ├── Generative AI (Gemini for Summaries/Replies)
+  └── Vector Search (pgvector for semantic similarity)
+      ↓
+Database (PostgreSQL with pgvector)
 ```
 
 ---
 
-## Features
-- **Hybrid Priority Scoring:** Combines XGBoost ML predictions with a custom rule-based engine for robust, real-world accuracy.
-- **ML-Powered Categorization:** SVM model classifies emails into categories (Promotions, Social, Primary, etc.).
-- **Generative AI (Gemini):** Summarizes threads, generates smart replies.
-- **Gmail API Integration:** Secure, OAuth2-based access to Gmail.
-- **Hands-Free Voice Commands:** Browser-based, no extra installation. Example commands: “read unread emails”, “compose”, “reply”.
-- **Analytics Dashboard:** Visualizes trends, activity, and response times.
-- **Semantic Vector Search:** Find similar emails using pgvector.
+## Key Features
+- **Hybrid Priority Scoring:** Merges XGBoost predictions with a transparent rule-based engine for robust, real-world prioritization.
+- **Automated Categorization:** SVM model classifies emails into actionable categories (e.g., Primary, Social, Promotions).
+- **Generative AI Summaries & Replies:** Uses Google Gemini for summarizing threads and suggesting context-aware replies.
+- **Voice-Driven Inbox:** Browser-based voice commands (Web Speech API) for hands-free navigation and actions.
+- **Analytics Dashboard:** Visualizes trends, response times, and sender/recipient activity.
+- **Semantic Search:** Finds similar emails using vector embeddings and pgvector.
+- **Secure Gmail Integration:** OAuth2-based access for reading, sending, and managing emails.
 
 ---
 
-## Model Training and Evaluation
-- **Data Sources:** Enron dataset, private inbox (with consent), synthetic data.
-- **Preprocessing:** HTML removal, tokenization, lemmatization, TF-IDF.
-- **Metrics:**
+## Data & Modeling
+- **Data Sources:**
+  - Enron Email Dataset (public, business context)
+  - Anonymized, consented personal inbox data
+  - Synthetic data for class balancing and edge cases
+- **Preprocessing Pipeline:**
+  - HTML/text cleaning, tokenization, lemmatization
+  - Custom stopword removal, TF-IDF vectorization
+- **Modeling:**
+  - **Priority:** XGBoost classifier + rule-based adjustment
+  - **Category:** SVM (linear kernel)
+  - **Evaluation:**
 
-| Model           | Accuracy | F1-Score |
-|-----------------|----------|----------|
-| Priority (XGB)  | 93%      | 0.92     |
-| Category (SVM)  | 95%      | 0.94     |
+    | Task      | Model    | Accuracy | F1-Score |
+    |-----------|----------|----------|----------|
+    | Priority  | XGBoost  | 93%      | 0.92     |
+    | Category  | SVM      | 95%      | 0.94     |
 
-- **Hybrid Approach:** Combines ML and rules for practical reliability.
+- **Hybrid Approach:**
+  - ML models provide baseline predictions
+  - Rule engine refines output using sender history, keywords, and context
+  - Generative AI augments with summaries and smart replies
 
 ---
 
 ## API Integrations
-- **Gmail API:** For reading, sending, and managing emails securely with OAuth2 authentication.
-- **Google Gemini API (Generative AI):** Powers advanced NLP features such as summarization, content generation, and smart replies.
-- **Google Cloud AI Platform:** Supports scalable machine learning and AI model deployment.
-- **Google BigQuery & Google Cloud Storage:** Used for large-scale data storage and analytics (if enabled in your configuration).
+- **Gmail API:** Secure email access and management
+- **Google Gemini (Generative AI):** Summarization, smart replies
+- **Google Cloud AI Platform:** Model deployment and scaling
+- **pgvector:** Semantic search in PostgreSQL
 
 ---
 
-## Setup Instructions
-
-1. **Create and activate a virtual environment:**
+## Setup
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd <project-directory>
+   ```
+2. **Create and activate a virtual environment:**
    ```bash
    python -m venv venv
-   # On Windows:
-   venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
+   # Windows: venv\Scripts\activate
+   # macOS/Linux: source venv/bin/activate
    ```
-
-2. **Install dependencies:**
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
-
-3. **Set up environment variables:**
-   - Copy `.env.example` to `.env` and update as needed.
-
-4. **Start Docker containers:**
+4. **Configure environment variables:**
+   - Copy `.env.example` to `.env` and fill in your credentials (Gmail, Gemini, DB, etc.)
+5. **Start Docker services:**
    ```bash
    docker-compose -f docker/docker-compose.yml up -d
    ```
-
-5. **Run migrations:**
+6. **Run migrations:**
    ```bash
    python manage.py migrate
    ```
-
-6. **Start the development server:**
+7. **Launch the server:**
    ```bash
    python manage.py runserver
    ```
 
 ---
 
-## Usage
-- **Login:** Navigate to the homepage and click the "Login with Google" button. You will be redirected to an OAuth consent screen to grant the application permission to access your emails.
-- **View Inbox:** Once authenticated, you will see your inbox. Emails are automatically labeled with their predicted priority (e.g., 🔥 High, 🟧 Medium) and category.
-- **Use Voice Commands:** Click the microphone icon in the navigation bar. Wait for the "listening" prompt and speak a command, such as "Read the first email" or "Compose a new email to example@email.com".
-- **Explore Analytics:** Click on the "Dashboard" tab to view visualizations of your email habits and trends.
+## How to Use
+- **Login:** Use "Login with Google" (OAuth2) to connect your inbox.
+- **Inbox:** View emails with AI-prioritized and categorized labels.
+- **Voice Commands:** Click the mic icon and say commands like "Read the first email", "Reply", or "Compose".
+- **Analytics:** Explore the dashboard for trends and insights.
+- **Smart Replies:** Use AI-generated suggestions for quick responses.
 
 ---
 
 ## Database Schema
-The main email table includes fields for email content, metadata, and our AI-generated insights.
-
-Key fields include: id, user_email, subject, sender, snippet, priority (High/Medium/Low), priority_score, category (Primary/Promotions/etc.), category_confidence, and has_attachments.
+The main email table includes:
+- id, user_email, subject, sender, recipients, date, snippet, has_attachments, attachments, star, label, folder, last_modified, priority, priority_score, priority_explanation, priority_last_updated, category, category_confidence, category_last_updated
 
 ---
 
 ## Roadmap
-- [ ] Automated Summarization: Implement on-demand summarization for long email threads using Gemini.
-- [ ] Sentiment Analysis: Add sentiment indicators (Positive, Neutral, Negative) to emails for quick emotional context.
-- [ ] Deployment Scripts: Create scripts and documentation for one-click deployment to platforms like Heroku or AWS Elastic Beanstalk.
-- [ ] Enhanced Analytics: Introduce cohort analysis to track user productivity improvements over time.
-- [ ] Real-time Notifications: Add browser notifications for high-priority emails.
+- [ ] On-demand summarization for long threads
+- [ ] Sentiment analysis for emotional context
+- [ ] One-click deployment scripts
+- [ ] Enhanced analytics (e.g., cohort analysis)
+- [ ] Real-time notifications for high-priority emails
 
 ---
 
-## Contributing & Testing
-Contributions are welcome! Please open an issue or submit a pull request. All features are tested using a mix of real-world and synthetic emails to ensure reliability.
-
----
+## Contributing
+Contributions are welcome! Please open an issue or submit a pull request. All features are tested on a mix of real and synthetic data for reliability and privacy.
