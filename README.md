@@ -23,6 +23,7 @@ Link: [Read the project announcement on LinkedIn](https://www.linkedin.com/posts
 - [How to Use](#how-to-use)
 - [Database Schema](#database-schema)
 - [Roadmap](#roadmap)
+- [System Screenshots](#system-screenshots)
 - [Contributing](#contributing)
 
 ---
