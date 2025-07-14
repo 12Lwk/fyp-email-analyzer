@@ -21,7 +21,7 @@ This project delivers a modern, intelligent email management platform built with
 ---
 
 ## Motivation
-Email overload is a persistent challenge for professionals. This project aims to transform the inbox experience by leveraging a hybrid AI approach—combining robust machine learning models, domain-specific rules, and generative AI—to deliver reliable, context-aware email organization and insights.
+Email overload is a persistent challenge for professionals. This project aims to transform the inbox experience by leveraging a hybrid AI approach combining robust machine learning models, domain-specific rules, and Generative AI to deliver reliable, context-aware email organization and insights.
 
 ---
 
@@ -74,13 +74,28 @@ Database (PostgreSQL with pgvector)
 
     | Task      | Model    | Accuracy | F1-Score |
     |-----------|----------|----------|----------|
-    | Priority  | XGBoost  | 93%      | 0.92     |
-    | Category  | SVM      | 95%      | 0.94     |
+    | Priority  | RF       | 99%      | 1.00     |
+    | Category  | XGBoost  | 84%      | 0.87     |
 
 - **Hybrid Approach:**
   - ML models provide baseline predictions
   - Rule engine refines output using sender history, keywords, and context
   - Generative AI augments with summaries and smart replies
+
+### Model Interpretability & Hybrid Adjustment
+
+Despite high accuracy and F1-scores, detailed analysis revealed a consistent bias toward the Medium priority class—especially for borderline or ambiguous emails. To address this, a post-training probability adjustment layer was developed, refining model predictions using domain-specific signals such as:
+- Urgency or risk keywords (e.g., “urgent”, “critical”, “failure”)
+- Action verbs and deadline phrases (“due today”, “immediately”)
+- Uppercase emphasis in subject lines
+- Informational/courtesy phrases for Low priority (“FYI”, “reminder”)
+
+This adjustment applies:
+- Weighted scoring based on detected context
+- Nonlinear scaling to boost or reduce probabilities (e.g., cubic boost for strong urgency)
+- Class threshold logic to avoid over-assigning Medium unless other classes lack strong signals
+
+This hybrid approach ensures the system delivers more reliable, human-aligned prioritization—especially in edge cases where pure statistical models may fail. The result is a practical, interpretable solution for real-world email management.
 
 ---
 
