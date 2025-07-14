@@ -1,9 +1,7 @@
 # Smart Email Management System
 
 [![Project Status: Complete](https://img.shields.io/badge/Status-Complete-brightgreen.svg)](https://www.repostatus.org/#inactive)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Frameworks](https://img.shields.io/badge/Frameworks-TensorFlow%20%7C%20Keras%20%7C%20Scikit--learn-orange.svg)](https://www.tensorflow.org/)
 
 *Final Year Project: Advancing Email Productivity with Hybrid AI and Data Analytics*
 
