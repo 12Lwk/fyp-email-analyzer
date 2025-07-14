@@ -4,9 +4,6 @@
 
 This project delivers a modern, intelligent email management platform built with Django, combining machine learning, rule-based logic, and generative AI to help users focus on what matters. The system automatically prioritizes, categorizes, and summarizes emails, supports hands-free voice commands, and provides actionable analytics—all while ensuring privacy and scalability.
 
-Link: [Read the project announcement on LinkedIn](https://www.linkedin.com/posts/lee-wen-kang-3b76b6188_fyp-finalyearproject-dataanalytics-activity-7331114077303345154-X-ZT?utm_source=share&utm_medium=member_desktop&rcm=ACoAACw97bsBncCETOMLZpB9FULMPgOBgDW6iBs) & [Watch a demo of the project on LinkedIn](https://www.linkedin.com/posts/lee-wen-kang-3b76b6188_fyp-finalyearproject-smartemailmanagement-activity-7334013184669794304-9_n8?utm_source=share&utm_medium=member_desktop&rcm=ACoAACw97bsBncCETOMLZpB9FULMPgOBgDW6iBs)
-
-
 ---
 
 ## Contents
@@ -41,7 +38,7 @@ User Interface
 REST API (Django Backend)
       ↓
 Email Logic & Orchestration
-  ├── ML Models (XGBoost for Priority, SVM for Category)
+  ├── ML Models (Random Forest for Priority, XGBoost for Category)
   ├── Rule Engine (Domain-specific heuristics)
   ├── Generative AI (Gemini for Summaries/Replies)
   └── Vector Search (pgvector for semantic similarity)
