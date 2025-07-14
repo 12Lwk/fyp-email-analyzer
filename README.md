@@ -49,8 +49,8 @@ Database (PostgreSQL with pgvector)
 ---
 
 ## Key Features
-- **Hybrid Priority Scoring:** Merges XGBoost predictions with a transparent rule-based engine for robust, real-world prioritization.
-- **Automated Categorization:** SVM model classifies emails into actionable categories (e.g., Primary, Social, Promotions).
+- **Hybrid Priority Scoring:** Merges Random Forest predictions with a transparent rule-based engine for robust, real-world prioritization.
+- **Automated Categorization:** XGBoost model classifies emails into actionable categories (e.g., Primary, Social, Promotions).
 - **Generative AI Summaries & Replies:** Uses Google Gemini for summarizing threads and suggesting context-aware replies.
 - **Voice-Driven Inbox:** Browser-based voice commands (Web Speech API) for hands-free navigation and actions.
 - **Analytics Dashboard:** Visualizes trends, response times, and sender/recipient activity.
