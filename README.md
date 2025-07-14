@@ -219,8 +219,39 @@ Based on the findings and limitations of this project, several recommendations a
 
 ---
 
+## System Screenshots
+1. **Login Page**
+![login_page](./assets/login_page.png)   
+2. **Dashboard Page**
+![dashboard_Page_1](./assets/dashboard_Page_1.png)
+![dashboard_Page_2](./assets/dashboard_Page_2.png)
+3. **Inbox Page**
+![inbox_page](./assets/inbox_page.png)
+3. **Inbox Detail Page**
+![inbox_detail_page_1](./assets/inbox_detail_page_1.png)
+![inbox_detail_page_2](./assets/inbox_detail_page_2.png)
+4. **Sent Page**
+![sent_page](./assets/sent_page.png)
+5. **Sent Detail Page**
+![sent_detail_page_1](./assets/sent_detail_page_1.png)
+6. **Compose Window**
+![compose_window](./assets/compose_window.png)
+7. **Spam Page**
+![spam_page](./assets/spam_page.png)
+8. **Spam Detail Page**
+![spam_detail_page_1](./assets/spam_detail_page_1.png)
+9. **Setting Page**
+![setting_page](./assets/setting_page.png)
+
+
+   
+
+---
+
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request. All features are tested on a mix of real and synthetic data for reliability and privacy.
+
+---
 
 ## Project Author
 
