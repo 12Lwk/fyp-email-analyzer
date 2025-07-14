@@ -100,7 +100,7 @@ The main email table includes:
 
 ## Contributing & Testing
 
-- All features are tested with real-world sample emails.
-- Data is anonymized for privacy and GDPR compliance.
+- All features are tested using a mix of real-world and synthetic emails, including data from the Enron email dataset, a personal inbox dataset (with consent), and carefully generated synthetic data.
+- All data used is anonymized to ensure privacy and GDPR compliance.
 
 ---
