@@ -2,6 +2,8 @@
 
 [![Project Status: Complete](https://img.shields.io/badge/Status-Complete-brightgreen.svg)](https://www.repostatus.org/#inactive)
 [![Python Version](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Framework: Django](https://img.shields.io/badge/Framework-Django-092E20.svg?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
+[![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791.svg?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
 
 *Final Year Project: Advancing Email Productivity with Hybrid AI and Data Analytics*
 
@@ -219,3 +221,8 @@ Based on the findings and limitations of this project, several recommendations a
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request. All features are tested on a mix of real and synthetic data for reliability and privacy.
+
+## Project Author
+
+* **Lee Wen Kang**
+* [Connect on LinkedIn](https://www.linkedin.com/in/lee-wen-kang-3b76b6188/)
