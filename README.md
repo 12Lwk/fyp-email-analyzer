@@ -1,5 +1,5 @@
 # Smart Email Management System
-This is my Final Year Project titled Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization. A Django-based platform for intelligent email management, featuring AI-powered prioritization, categorization, voice commands, analytics Dashboard, and seamless Gmail integration.
+This is my Final Year Project titled Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization. A Django-based platform for intelligent email management, featuring AI-powered prioritization, categorization, voice commands, analytics dashboard, and seamless Gmail integration.
 
 ---
 
