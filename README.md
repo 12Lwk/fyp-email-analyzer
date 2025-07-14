@@ -68,8 +68,8 @@ Database (PostgreSQL with pgvector)
   - HTML/text cleaning, tokenization, lemmatization
   - Custom stopword removal, TF-IDF vectorization
 - **Modeling:**
-  - **Priority:** XGBoost classifier + rule-based adjustment
-  - **Category:** SVM (linear kernel)
+  - **Priority:** Random Forest classifier + rule-based adjustment
+  - **Category:** XGBoost 
   - **Evaluation:**
 
     | Task      | Model    | Accuracy | F1-Score |
