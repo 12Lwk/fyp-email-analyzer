@@ -4,7 +4,7 @@
 
 This project delivers a modern, intelligent email management platform built with Django, combining machine learning, rule-based logic, and generative AI to help users focus on what matters. The system automatically prioritizes, categorizes, and summarizes emails, supports hands-free voice commands, and provides actionable analytics—all while ensuring privacy and scalability.
 
-Link: https://www.linkedin.com/posts/lee-wen-kang-3b76b6188_fyp-finalyearproject-dataanalytics-activity-7331114077303345154-X-ZT?utm_source=share&utm_medium=member_desktop&rcm=ACoAACw97bsBncCETOMLZpB9FULMPgOBgDW6iBs
+Link: [here](https://www.linkedin.com/posts/lee-wen-kang-3b76b6188_fyp-finalyearproject-dataanalytics-activity-7331114077303345154-X-ZT?utm_source=share&utm_medium=member_desktop&rcm=ACoAACw97bsBncCETOMLZpB9FULMPgOBgDW6iBs)
 
 ---
 
