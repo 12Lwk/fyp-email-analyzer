@@ -194,5 +194,28 @@ The main email table includes:
 
 ---
 
+## Future Work
+Based on the findings and limitations of this project, several recommendations are proposed for future improvements:
+
+1. **Improve OAuth Token Handling for Continuous Data Fetching:**
+   - Enhance OAuth token management to reduce the need for frequent user reauthentication. Implement more efficient token refresh mechanisms or extend session handling for uninterrupted, real-time email fetching.
+
+2. **Enhance AI-Generated Suggested Reply Quality:**
+   - Improve the contextual relevance and accuracy of AI-generated replies by fine-tuning Gemini API models with domain-specific data or integrating multi-turn dialogue capabilities for more sophisticated responses.
+
+3. **Strengthen Model Robustness for Ambiguous Emails:**
+   - Expand the training dataset with more complex, real-world emails and collect user feedback to improve model learning. Explore advanced feature engineering (e.g., context-aware embeddings, hierarchical classification) to better handle challenging or borderline emails.
+
+4. **Expand Voice Command Functionalities:**
+   - Enable users to edit email content verbally and extend voice commands to other pages (e.g., Analytics Dashboard) for tasks like reading aloud key insights. Incorporate advanced speech-to-text features for improved accessibility and user experience.
+
+5. **Optimize Data Preprocessing Using More Advanced LLMs:**
+   - Use more powerful LLMs for dataset labeling, assuming improved computational resources, to produce higher-quality labeled data and improve model performance.
+
+6. **Upgrade Deployment Infrastructure for Larger Models:**
+   - Upgrade server hardware, expand storage, and ensure environment compatibility to support the deployment of more advanced machine learning models and realize their full potential.
+
+---
+
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request. All features are tested on a mix of real and synthetic data for reliability and privacy.
