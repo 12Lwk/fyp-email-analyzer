@@ -15,6 +15,7 @@ Link: [Read the project announcement on LinkedIn](https://www.linkedin.com/posts
 
 ## Contents
 - [Motivation](#motivation)
+- [Project Structure](#project-structure)
 - [System Overview](#system-overview)
 - [Key Features](#key-features)
 - [Data & Modeling](#data--modeling)
@@ -32,6 +33,16 @@ Link: [Read the project announcement on LinkedIn](https://www.linkedin.com/posts
 Email overload is a persistent challenge for professionals. This project aims to transform the inbox experience by leveraging a hybrid AI approach combining robust machine learning models, domain-specific rules, and Generative AI to deliver reliable, context-aware email organization and insights.
 
 ---
+
+## Project Structure
+```
+email_app/           # Main Django application (AI, Gmail API, voice, templates)
+email_project/       # Django project settings
+docker/              # Docker configuration (PostgreSQL, pgvector)
+requirements.txt     # Python dependencies
+manage.py            # Django management script
+.env                 # Environment variables
+```
 
 ## System Overview
 The platform is architected for modularity and extensibility, with clear separation between data ingestion, processing, AI services, and user interaction.
