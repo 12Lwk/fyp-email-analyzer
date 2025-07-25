@@ -5,7 +5,7 @@
 [![Framework: Django](https://img.shields.io/badge/Framework-Django-092E20.svg?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
 [![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791.svg?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
 
-*Final Year Project: Advancing Email Productivity with Hybrid AI and Data Analytics*
+*Final Year Project: Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization or Advancing Email Productivity with Hybrid AI and Data Analytics*
 
 This project delivers a modern, intelligent email management platform built with Django, combining machine learning, rule-based logic, and generative AI to help users focus on what matters. The system automatically prioritizes, categorizes, and summarizes emails, supports hands-free voice commands, and provides actionable analytics—all while ensuring privacy and scalability.
 
@@ -23,6 +23,7 @@ Link: [Read the project announcement on LinkedIn](https://www.linkedin.com/posts
 - [How to Use](#how-to-use)
 - [Database Schema](#database-schema)
 - [Roadmap](#roadmap)
+- [System Screenshots](#system-screenshots)
 - [Contributing](#contributing)
 
 ---
@@ -256,4 +257,4 @@ Contributions are welcome! Please open an issue or submit a pull request. All fe
 ## Project Author
 
 * **Lee Wen Kang**
-* [Connect on LinkedIn](https://www.linkedin.com/in/lee-wen-kang-3b76b6188/)
+* [Connect on LinkedIn](https://www.linkedin.com/in/leewenkang12/)
