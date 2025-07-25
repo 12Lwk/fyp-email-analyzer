@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
-    <rect width="150" height="150" fill="#ffffff"/>
-    <circle cx="75" cy="75" r="60" fill="#DB4437"/>
-    <path d="M45 60L75 80L105 60V95H45V60Z" fill="white"/>
-    <path d="M45 60L75 80L105 60" stroke="white" stroke-width="2" fill="none"/>
-</svg> 
