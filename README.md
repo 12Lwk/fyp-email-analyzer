@@ -15,7 +15,7 @@ Link: [Read the project announcement on LinkedIn](https://www.linkedin.com/posts
 
 ## Contents
 - [Motivation](#motivation)
-- [Project Structure](#project-struture)
+- [Project Structure](#project-structure)
 - [System Overview](#system-overview)
 - [Key Features](#key-features)
 - [Data & Modeling](#data--modeling)
