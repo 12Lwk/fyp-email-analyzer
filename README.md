@@ -37,7 +37,6 @@ Email overload is a persistent challenge for professionals. This project aims to
 ```
 email_app/           # Main Django application (AI, Gmail API, voice, templates)
 email_project/       # Django project settings
-datasets/            # Email datasets (priority, category)
 docker/              # Docker configuration (PostgreSQL, pgvector)
 requirements.txt     # Python dependencies
 manage.py            # Django management script
