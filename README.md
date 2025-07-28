@@ -32,6 +32,12 @@ Link: [Read the project announcement on LinkedIn](https://www.linkedin.com/posts
 ## Motivation
 Email overload is a persistent challenge for professionals. This project aims to transform the inbox experience by leveraging a hybrid AI approach combining robust machine learning models, domain-specific rules, and Generative AI to deliver reliable, context-aware email organization and insights.
 
+## Objectives
+1.	To conduct a comprehensive analysis of existing email management systems and user challenges through literature review and user surveys, and to prepare a structured email dataset for model development.
+2.	To analyze and design an intelligent unified data architecture incorporating natural language processing, machine learning algorithms, and security protocols.
+3.	To develop an intelligent multi-modal data assistant that integrates API integrations, automated visualization generation, and voice-enabled analytics
+4.	To evaluate the effectiveness and performance of the developed system through controlled testing and user acceptance in enterprise environments.
+
 ---
 
 ## Project Structure
