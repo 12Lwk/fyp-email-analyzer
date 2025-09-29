@@ -45,34 +45,96 @@ Email overload is a persistent challenge for professionals. This project aims to
 
 ## Project Structure
 ```
-email_app/           # Main Django application (AI, Gmail API, voice, templates)
-email_project/       # Django project settings
-docker/              # Docker configuration (PostgreSQL, pgvector)
-requirements.txt     # Python dependencies
-manage.py            # Django management script
-.env                 # Environment variables
+email_app/                    # Main Django application
+├── ai_services/             # AI/ML services (categorization, prioritization, LLM)
+├── Gmail_API/               # Gmail API integration
+├── voice_services/          # Voice command functionality
+├── views/                   # Django views (auth, email, dashboard, AI)
+├── models/                  # Database models
+├── templates/               # HTML templates
+├── static/                  # CSS, JavaScript, assets
+├── utils/                   # Utility functions
+└── management/              # Django management commands
+
+email_project/               # Django project settings
+Data Preprocessing and EDA/  # Jupyter notebooks for data analysis
+├── FYPEnronEmail_NLP1.ipynb        # Initial data loading and cleaning
+├── FYP_Trans_Feature_NLP2.ipynb    # Feature transformation
+├── FYP_Message_Text_Cleaning_NLP3.ipynb # Text preprocessing
+└── FYP_Visualization4.ipynb         # Data visualization and EDA
+
+Data Labeling Solutions/     # Automated labeling approaches
+├── Large Language Model/   # LLM-based labeling (Qwen2.5)
+└── Unsupervised Learning/   # Clustering-based labeling
+
+Model Building/              # ML model development
+├── Prioritization Model/    # Random Forest priority classification
+└── Categorization Model/    # XGBoost category classification
+
+Experiments/                 # Model experiments and iterations
+├── Category Modeling/       # Category model experiments
+├── Priority Modeling/       # Priority model experiments
+├── Data Labeling GC/        # Google Cloud labeling experiments
+└── Spam Data Preparation/   # Spam detection data prep
+
+requirements.txt            # Python dependencies
+manage.py                   # Django management script
+.env                        # Environment variables
 ```
 
 ## System Overview
 The platform is architected for modularity and extensibility, with clear separation between data ingestion, processing, AI services, and user interaction.
 
-System Architecture:
+### System Architecture
 
 ```
-User Interface
-  ├── Web UI (Inbox, Analytics, Compose, etc.)
-  └── Voice Commands (Web Speech API)
-      ↓
-REST API (Django Backend)
-      ↓
-Email Logic & Orchestration
-  ├── ML Models (Random Forest for Priority, XGBoost for Category)
-  ├── Rule Engine (Domain-specific heuristics)
-  ├── Generative AI (Gemini for Summaries/Replies)
-  └── Vector Search (pgvector for semantic similarity)
-      ↓
-Database (PostgreSQL with pgvector)
+┌─────────────────────────────────────────────────────────────┐
+│                    User Interface Layer                     │
+├─────────────────────────────────────────────────────────────┤
+│  Web UI (Django Templates)    │  Voice Commands (Web Speech) │
+│  • Inbox Management           │  • Voice Navigation          │
+│  • Analytics Dashboard        │  • Hands-free Email Actions  │
+│  • Email Composition          │  • Voice-to-Text Input       │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                   Django REST API Layer                     │
+├─────────────────────────────────────────────────────────────┤
+│  Authentication (OAuth2)      │  Email Management Views      │
+│  • Gmail OAuth Integration    │  • CRUD Operations           │
+│  • Session Management         │  • Bulk Actions              │
+│  • User Profile Management    │  • Search & Filtering        │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    AI Services Layer                        │
+├─────────────────────────────────────────────────────────────┤
+│  ML Models                    │  Generative AI Services      │
+│  • Random Forest (Priority)   │  • Google Gemini Integration │
+│  • XGBoost (Categorization)   │  • Email Summarization       │
+│  • Rule-based Enhancement     │  • Smart Reply Generation    │
+│  • Vector Embeddings          │  • Context-aware Responses   │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                   Data & Integration Layer                   │
+├─────────────────────────────────────────────────────────────┤
+│  Gmail API Integration        │  Database (PostgreSQL)       │
+│  • Email Fetching             │  • Email Storage             │
+│  • Send/Reply Operations      │  • User Profiles             │
+│  • Real-time Sync            │  • Vector Search (pgvector)  │
+│  • Attachment Handling        │  • Analytics Data            │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+### Technical Stack
+- **Backend:** Django 5.2, Python 3.9+
+- **Database:** PostgreSQL with pgvector extension
+- **ML/AI:** scikit-learn, XGBoost, Google Gemini API
+- **Frontend:** HTML5, CSS3, JavaScript (Web Speech API)
+- **APIs:** Gmail API, Google Cloud AI Platform
+- **Authentication:** OAuth2 (Google)
+- **Data Processing:** pandas, numpy, BeautifulSoup4
 
 ---
 
@@ -87,28 +149,43 @@ Database (PostgreSQL with pgvector)
 
 ---
 
-## Data & Modeling
-- **Data Sources:**
-  - Enron Email Dataset (public, business context)
-  - Anonymized, consented personal inbox data
-  - Synthetic data for class balancing and edge cases
-- **Preprocessing Pipeline:**
-  - HTML/text cleaning, tokenization, lemmatization
-  - Custom stopword removal, TF-IDF vectorization
-- **Modeling:**
-  - **Priority:** Random Forest classifier + rule-based adjustment
-  - **Category:** XGBoost 
-  - **Evaluation:**
+## Data & Modeling Pipeline
 
-    | Task      | Model    | Accuracy | F1-Score |
-    |-----------|----------|----------|----------|
-    | Priority  | RF       | 99%      | 1.00     |
-    | Category  | XGBoost  | 84%      | 0.87     |
+### Data Collection & Preparation
+- **Primary Dataset:** Enron Email Dataset (517,401 emails from 150+ users)
+- **Data Processing:** Multi-stage pipeline implemented in Jupyter notebooks:
+  - `FYPEnronEmail_NLP1.ipynb`: Data loading, initial cleaning, and exploration
+  - `FYP_Trans_Feature_NLP2.ipynb`: Feature engineering and transformation
+  - `FYP_Message_Text_Cleaning_NLP3.ipynb`: Advanced text preprocessing (HTML cleaning, tokenization, lemmatization)
+  - `FYP_Visualization4.ipynb`: Comprehensive EDA and data visualization
 
-- **Hybrid Approach:**
-  - ML models provide baseline predictions
-  - Rule engine refines output using sender history, keywords, and context
-  - Generative AI augments with summaries and smart replies
+### Automated Data Labeling
+- **LLM-Based Labeling:** Used Qwen2.5 large language model for consistent, context-aware labeling
+- **Category Labels:** 11 workplace-relevant categories (Work/Business, Finance, Personal, Meeting, Spam, IT Alerts, HR Updates, Social Media, Utilities, Promotions, Legal)
+- **Priority Labels:** 3-tier priority system (High, Medium, Low) based on urgency and importance
+- **Quality Assurance:** Structured prompts ensure consistent labeling across 500K+ emails
+
+### Machine Learning Models
+- **Priority Classification:**
+  - **Model:** Random Forest with 100 estimators
+  - **Features:** TF-IDF vectors, sender patterns, temporal features
+  - **Performance:** 99% accuracy, 1.00 F1-score
+  - **Hybrid Enhancement:** Rule-based post-processing for edge cases
+
+- **Category Classification:**
+  - **Model:** XGBoost with optimized hyperparameters
+  - **Features:** TF-IDF vectors, email metadata, content patterns
+  - **Performance:** 84% accuracy, 0.87 F1-score
+  - **Class Balancing:** Weighted training to handle imbalanced categories
+
+### Model Implementation
+- **AI Services Architecture:** Modular design in `email_app/ai_services/`
+  - `categorization/`: Email category prediction service
+  - `prioritazation/`: Email priority scoring service
+  - `llm/`: Generative AI integration (Google Gemini)
+  - `embeddings/`: Vector embeddings for semantic search
+  - `summarization/`: Email thread summarization
+  - `recommendations/`: Smart reply suggestions
 
 ### Email Category Labeling & Balancing
 
@@ -160,36 +237,80 @@ This hybrid approach ensures the system delivers more reliable, human-aligned pr
 
 ---
 
-## Setup
+## Setup Instructions
+
+### Prerequisites
+- Python 3.9 or higher
+- PostgreSQL 12+ with pgvector extension
+- Gmail API credentials
+- Google Gemini API key
+
+### Installation Steps
+
 1. **Clone the repository:**
    ```bash
    git clone <your-repo-url>
-   cd <project-directory>
+   cd fyp-email-analyzer
    ```
+
 2. **Create and activate a virtual environment:**
    ```bash
    python -m venv venv
-   # Windows: venv\Scripts\activate
-   # macOS/Linux: source venv/bin/activate
+   # Windows:
+   venv\Scripts\activate
+   # macOS/Linux:
+   source venv/bin/activate
    ```
-3. **Install dependencies:**
+
+3. **Install Python dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
-4. **Configure environment variables:**
-   - Copy `.env.example` to `.env` and fill in your credentials (Gmail, Gemini, DB, etc.)
-5. **Start Docker services:**
-   ```bash
-   docker-compose -f docker/docker-compose.yml up -d
+
+4. **Database Setup:**
+   - Install PostgreSQL and create a database named `email_db`
+   - Install pgvector extension:
+     ```sql
+     CREATE EXTENSION IF NOT EXISTS vector;
+     ```
+   - Update database credentials in `email_project/settings.py` or use environment variables
+
+5. **Configure environment variables:**
+   Create a `.env` file in the root directory with:
+   ```env
+   # Gmail API
+   GMAIL_CLIENT_ID=your_gmail_client_id
+   GMAIL_CLIENT_SECRET=your_gmail_client_secret
+   
+   # Google Gemini API
+   GEMINI_API_KEY=your_gemini_api_key
+   
+   # Database (if using environment variables)
+   DB_NAME=email_db
+   DB_USER=postgres
+   DB_PASSWORD=your_password
+   DB_HOST=localhost
+   DB_PORT=5432
    ```
-6. **Run migrations:**
+
+6. **Run database migrations:**
    ```bash
    python manage.py migrate
    ```
-7. **Launch the server:**
+
+7. **Create a superuser (optional):**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+8. **Launch the development server:**
    ```bash
    python manage.py runserver
    ```
+
+9. **Access the application:**
+   - Open your browser and navigate to `http://localhost:8000`
+   - Use "Login with Google" to authenticate and connect your Gmail account
 
 ---
 
