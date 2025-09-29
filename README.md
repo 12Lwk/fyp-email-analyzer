@@ -4,6 +4,12 @@
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
 [![Framework: Django](https://img.shields.io/badge/Framework-Django-092E20.svg?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
 [![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791.svg?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
+[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-4285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/)
+[![Gmail API](https://img.shields.io/badge/Gmail%20API-EA4335.svg?style=for-the-badge&logo=gmail&logoColor=white)](https://developers.google.com/gmail/api)
+[![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2.svg?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Machine Learning](https://img.shields.io/badge/ML-scikit--learn-F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-FF6600.svg?style=for-the-badge&logo=xgboost&logoColor=white)](https://xgboost.readthedocs.io/)
+[![pgvector](https://img.shields.io/badge/pgvector-336791.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://github.com/pgvector/pgvector)
 
 *Final Year Project: Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization or Advancing Email Productivity with Hybrid AI and Data Analytics*
 
