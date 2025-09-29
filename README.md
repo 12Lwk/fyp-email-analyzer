@@ -8,7 +8,6 @@
 [![Gmail API](https://img.shields.io/badge/Gmail%20API-EA4335.svg?style=for-the-badge&logo=gmail&logoColor=white)](https://developers.google.com/gmail/api)
 [![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2.svg?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![Machine Learning](https://img.shields.io/badge/ML-scikit--learn-F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-FF6600.svg?style=for-the-badge&logo=xgboost&logoColor=white)](https://xgboost.readthedocs.io/)
 [![pgvector](https://img.shields.io/badge/pgvector-336791.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://github.com/pgvector/pgvector)
 
 *Final Year Project: Leveraging Natural Language Processing and Data Analytics for Smarter Email Management Optimization or Advancing Email Productivity with Hybrid AI and Data Analytics*
